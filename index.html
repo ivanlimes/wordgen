@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Word Generator</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#111111">
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:16px;line-height:1.25}
+    h1{font-size:18px;margin:0 0 12px 0}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    input,button,select{font-size:18px;padding:10px;border:1px solid #ccc;border-radius:12px}
+    input{flex:1;min-width:240px}
+    button{cursor:pointer}
+    small{color:#666}
+    #results{white-space:pre; font-size:16px; padding:12px; border:1px solid #ddd; border-radius:14px; min-height:240px; overflow:auto}
+    .muted{opacity:.75}
+    .pill{display:inline-block;padding:4px 10px;border:1px solid #ddd;border-radius:999px}
+  </style>
+</head>
+<body>
+
+<h1>Word Generator</h1>
+
+<div class="row">
+  <input id="letters" inputmode="latin" autocomplete="off" autocapitalize="none" spellcheck="false"
+    placeholder="type letters (e.g., stare)" />
+  <button id="clearBtn" type="button">Clear</button>
+</div>
+
+<div class="row muted" style="margin-top:10px">
+  <label class="pill">Min length
+    <select id="minLen">
+      <option>2</option><option>3</option><option>4</option><option>5</option>
+      <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+    </select>
+  </label>
+
+  <label class="pill">Sort
+    <select id="sortMode">
+      <option value="long" selected>Longest first</option>
+      <option value="alpha">A→Z</option>
+    </select>
+  </label>
+
+  <label class="pill">Max results
+    <select id="maxOut">
+      <option value="2000">2000</option>
+      <option value="5000" selected>5000</option>
+      <option value="10000">10000</option>
+      <option value="999999">all</option>
+    </select>
+  </label>
+</div>
+
+<p class="muted" style="margin:10px 0 12px">
+  <small id="status">Loading…</small>
+</p>
+
+<div id="results"></div>
+
+<script>
+/*
+  Dictionary source: dwyl/english-words words_alpha.txt (~479k)
+  PWA caches the app shell offline; dictionary cached in IndexedDB after first download.
+*/
+
+const DICT_URL = "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt";
+
+// --- IndexedDB helpers ---
+const DB_NAME = "WordGenDB";
+const STORE = "kv";
+const KEY = "words_alpha_v1";
+
+let DICT = [];
+let META = [];
+let READY = false;
+
+const $letters = document.getElementById("letters");
+const $results = document.getElementById("results");
+const $status  = document.getElementById("status");
+const $minLen  = document.getElementById("minLen");
+const $sortMode= document.getElementById("sortMode");
+const $maxOut  = document.getElementById("maxOut");
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  $letters.value = "";
+  $results.textContent = "";
+  $letters.focus();
+});
+
+$letters.addEventListener("input", () => READY && run());
+$minLen.addEventListener("change", () => READY && run());
+$sortMode.addEventListener("change", () => READY && run());
+$maxOut.addEventListener("change", () => READY && run());
+
+function normLetters(s){
+  return (s || "").toLowerCase().replace(/[^a-z]/g, "");
+}
+
+function openDB(){
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE);
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function idbGet(db, key){
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readonly");
+    const st = tx.objectStore(STORE);
+    const req = st.get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function idbSet(db, key, val){
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readwrite");
+    const st = tx.objectStore(STORE);
+    const req = st.put(val, key);
+    req.onsuccess = () => resolve(true);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// --- Speed tricks ---
+// 1) Bitmask prefilter: reject words containing letters not in input
+// 2) Packed counts: compare only the letters actually used in the word
+function buildMeta(words){
+  const meta = new Array(words.length);
+  for (let i=0;i<words.length;i++){
+    const w = words[i];
+    const counts = new Uint8Array(26);
+    let mask = 0;
+    for (let j=0;j<w.length;j++){
+      const c = w.charCodeAt(j) - 97;
+      counts[c]++;
+      mask |= (1 << c);
+    }
+    const packed = [];
+    for (let k=0;k<26;k++){
+      if (counts[k]) packed.push(k, counts[k]);
+    }
+    meta[i] = { len: w.length, mask, packed };
+  }
+  return meta;
+}
+
+async function loadDictionary(){
+  $status.textContent = "Checking offline dictionary…";
+  const db = await openDB();
+  let cached = await idbGet(db, KEY);
+
+  if (!cached){
+    $status.textContent = "Downloading dictionary (first time only)…";
+    const resp = await fetch(DICT_URL, { cache: "no-store" });
+    if (!resp.ok) throw new Error("Dictionary download failed.");
+    const text = await resp.text();
+
+    const words = text
+      .split("\n")
+      .map(x => x.trim())
+      .filter(w => w && /^[a-z]+$/.test(w))
+      .filter(w => w.length >= 2 || w === "a" || w === "i");
+
+    cached = { words };
+    await idbSet(db, KEY, cached);
+    $status.textContent = "Dictionary saved for offline use ✅";
+  } else {
+    $status.textContent = "Loaded offline dictionary ✅";
+  }
+
+  DICT = cached.words;
+  $status.textContent = `Indexing… (${DICT.length.toLocaleString()} words)`;
+  META = buildMeta(DICT);
+
+  READY = true;
+  $status.textContent = `Ready ✅ (${DICT.length.toLocaleString()} words)`;
+}
+
+function run(){
+  const letters = normLetters($letters.value);
+  if (!letters){
+    $results.textContent = "";
+    return;
+  }
+
+  const minLen = parseInt($minLen.value, 10);
+  const sortMode = $sortMode.value;
+  const maxOut = parseInt($maxOut.value, 10);
+
+  const L = letters.length;
+  const inCounts = new Uint8Array(26);
+  let inMask = 0;
+
+  for (let i=0;i<L;i++){
+    const idx = letters.charCodeAt(i) - 97;
+    inCounts[idx]++;
+    inMask |= (1 << idx);
+  }
+
+  const out = [];
+  for (let i=0;i<DICT.length;i++){
+    const m = META[i];
+    if (m.len > L || m.len < minLen) continue;
+    if ((m.mask & ~inMask) !== 0) continue;
+
+    const packed = m.packed;
+    let ok = true;
+    for (let p=0;p<packed.length;p+=2){
+      const idx = packed[p];
+      const need = packed[p+1];
+      if (need > inCounts[idx]) { ok = false; break; }
+    }
+    if (!ok) continue;
+
+    out.push(DICT[i]);
+    if (out.length >= maxOut) break;
+  }
+
+  if (out.length === 0){
+    $results.textContent = "none";
+    return;
+  }
+
+  if (sortMode === "alpha"){
+    out.sort();
+  } else {
+    out.sort((a,b) => (b.length - a.length) || (a < b ? -1 : a > b ? 1 : 0));
+  }
+
+  $results.textContent = out.join("\n");
+}
+
+// --- PWA registration ---
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
+
+loadDictionary().catch(err => {
+  $status.textContent = "Error: " + (err?.message || String(err));
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "Word Generator",
+  "short_name": "WordGen",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111111",
+  "icons": []
+}
