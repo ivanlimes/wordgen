@@ -3,137 +3,241 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Word Generator</title>
+  <title>WordGen</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#0f4c5c">
+  <meta name="theme-color" content="#0b3a44">
 
   <style>
     :root{
-      --bg:#0f4c5c;        /* dark teal */
-      --panel:#08353d;     /* deeper teal */
-      --panel2:#0b3e47;    /* input surface */
-      --border:#2f7a86;    /* teal border */
-      --text:#e8f6f7;      /* near-white */
-      --muted:#b9d8dc;     /* muted text */
+      /* Dark teal theme */
+      --bg:#062a33;
+      --surface:#0a3843;
+      --surface2:#0d4653;
+      --border:#1f7a8c;
+      --text:#e9fbff;
+      --muted:#b7d9df;
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
+
+      /* Spacing + sizing */
+      --r:14px;
+      --pad:12px;
+      --gap:12px;
     }
 
+    *{box-sizing:border-box}
     body{
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      margin:16px;
-      line-height:1.25;
+      margin:0;
       background:var(--bg);
       color:var(--text);
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      line-height:1.35;
     }
 
-    h1{font-size:18px;margin:0 0 12px 0}
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 16px;
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
+    }
 
-    .grid{display:grid;grid-template-columns:1fr;gap:10px}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 12px;
+    }
 
-    input,button,select{
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap: 2px;
+    }
+    h1{
+      margin:0;
       font-size:18px;
-      padding:10px;
-      border:1px solid var(--border);
-      border-radius:12px;
-      background:var(--panel2);
-      color:var(--text);
-      outline:none;
+      letter-spacing:.3px;
+    }
+    .sub{
+      color:var(--muted);
+      font-size:13px;
     }
 
-    input{flex:1;min-width:240px}
-    button{cursor:pointer}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid rgba(31,122,140,.55);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
 
-    small{color:var(--muted)}
-    .muted{opacity:.9}
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: var(--gap);
+    }
+
+    /* Responsive: 2 columns on medium screens, 3 on large */
+    @media (min-width: 720px){
+      .grid.cols-2{grid-template-columns: 1fr 1fr}
+      .grid.cols-3{grid-template-columns: 1fr 1fr 1fr}
+    }
+
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin: 0 0 6px 2px;
+      letter-spacing:.2px;
+    }
+
+    input, select, button{
+      width:100%;
+      font-size:16px;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border:1px solid rgba(31,122,140,.8);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+    }
+    input:focus, select:focus{
+      border-color: rgba(233,251,255,.85);
+    }
+
+    .row{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn{
+      background: var(--surface2);
+      cursor:pointer;
+      font-weight:600;
+      letter-spacing:.2px;
+    }
+    .btn:active{transform: translateY(1px)}
+
+    .hint{
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
     .pill{
       display:inline-block;
-      padding:4px 10px;
-      border:1px solid var(--border);
-      border-radius:999px;
-      background:rgba(0,0,0,.08);
+      padding: 2px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(31,122,140,.8);
+      background: rgba(0,0,0,.12);
+      color: var(--text);
+      font-size: 12px;
+      vertical-align: middle;
     }
-    .hint{font-size:13px;color:var(--muted);margin-top:-6px}
-    .label{font-size:13px;color:var(--text);margin:0 0 4px 2px}
+
+    .status{
+      font-size:13px;
+      color: var(--muted);
+    }
 
     #results{
-      white-space:pre;
-      font-size:16px;
-      padding:12px;
-      border:1px solid var(--border);
-      border-radius:14px;
-      min-height:260px;
+      white-space: pre;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
+      line-height: 1.4;             /* prevents “lines touching” */
+      padding: 12px;
+      border-radius: 12px;
+      border:1px solid rgba(31,122,140,.8);
+      background: rgba(0,0,0,.18);
+      min-height: 280px;
       overflow:auto;
-      background:var(--panel);
-      color:var(--text);
+    }
+
+    .controls{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: var(--gap);
+    }
+    @media (min-width: 720px){
+      .controls{grid-template-columns: 1fr 1fr 1fr}
     }
   </style>
 </head>
 <body>
 
-<h1>Word Generator</h1>
+<div class="wrap">
 
-<div class="grid">
-  <div>
-    <div class="label">Letters (use ? as wildcard)</div>
-    <div class="row">
-      <input id="letters" inputmode="latin" autocomplete="off" autocapitalize="none" spellcheck="false"
-        placeholder="e.g., stare??" />
-      <button id="clearBtn" type="button">Clear</button>
+  <header>
+    <div class="title">
+      <h1>WordGen</h1>
+      <div class="sub">Use ? as a blank. Filter with must-contain, starts-with, ends-with.</div>
     </div>
-    <div class="hint">“?” matches any single letter. Example: <span class="pill">stare?</span> finds words you can make with stare + one blank.</div>
+    <div class="status" id="status">Loading…</div>
+  </header>
+
+  <div class="card">
+    <div class="grid cols-2">
+      <div>
+        <label>Letters (use ? as wildcard)</label>
+        <div class="row">
+          <input id="letters" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="stare??" />
+          <button class="btn" id="clearBtn" type="button" style="width:auto;min-width:110px">Clear</button>
+        </div>
+        <div class="hint">Example: <span class="pill">stare?</span> = stare + one blank letter.</div>
+      </div>
+
+      <div class="grid cols-3" style="align-content:start">
+        <div>
+          <label>Must contain</label>
+          <input id="mustContain" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ing" />
+        </div>
+        <div>
+          <label>Starts with</label>
+          <input id="startsWith" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="pre" />
+        </div>
+        <div>
+          <label>Ends with</label>
+          <input id="endsWith" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ed" />
+        </div>
+      </div>
+    </div>
+
+    <div class="controls" style="margin-top:14px">
+      <div>
+        <label>Min length</label>
+        <select id="minLen">
+          <option>2</option><option>3</option><option>4</option><option>5</option>
+          <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Sort</label>
+        <select id="sortMode">
+          <option value="long" selected>Longest first</option>
+          <option value="alpha">A→Z</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Max results</label>
+        <select id="maxOut">
+          <option value="2000">2000</option>
+          <option value="5000" selected>5000</option>
+          <option value="10000">10000</option>
+          <option value="999999">all</option>
+        </select>
+      </div>
+    </div>
   </div>
 
-  <div class="row">
-    <div style="flex:1;min-width:220px">
-      <div class="label">Must contain</div>
-      <input id="mustContain" inputmode="latin" autocomplete="off" autocapitalize="none" spellcheck="false"
-        placeholder="e.g., ing" />
-      <div class="hint">Counts matter: <span class="pill">oo</span> requires two O’s.</div>
-    </div>
-
-    <div style="flex:1;min-width:220px">
-      <div class="label">Starts with</div>
-      <input id="startsWith" inputmode="latin" autocomplete="off" autocapitalize="none" spellcheck="false"
-        placeholder="e.g., pre" />
-    </div>
-
-    <div style="flex:1;min-width:220px">
-      <div class="label">Ends with</div>
-      <input id="endsWith" inputmode="latin" autocomplete="off" autocapitalize="none" spellcheck="false"
-        placeholder="e.g., ed" />
-    </div>
+  <div class="card">
+    <div id="results"></div>
   </div>
 
-  <div class="row muted">
-    <label class="pill">Min length
-      <select id="minLen">
-        <option>2</option><option>3</option><option>4</option><option>5</option>
-        <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
-      </select>
-    </label>
-
-    <label class="pill">Sort
-      <select id="sortMode">
-        <option value="long" selected>Longest first</option>
-        <option value="alpha">A→Z</option>
-      </select>
-    </label>
-
-    <label class="pill">Max results
-      <select id="maxOut">
-        <option value="2000">2000</option>
-        <option value="5000" selected>5000</option>
-        <option value="10000">10000</option>
-        <option value="999999">all</option>
-      </select>
-    </label>
-  </div>
-
-  <p class="muted" style="margin:0">
-    <small id="status">Loading…</small>
-  </p>
-
-  <div id="results"></div>
 </div>
 
 <script>
@@ -142,7 +246,7 @@ const DICT_URL = "https://raw.githubusercontent.com/dwyl/english-words/master/wo
 // IndexedDB
 const DB_NAME = "WordGenDB";
 const STORE = "kv";
-const KEY = "words_alpha_v3"; // bump to force fresh dictionary key if needed
+const KEY = "words_alpha_v4"; // bump to avoid old cached key collisions
 
 let DICT = [];
 let META = [];
@@ -170,12 +274,8 @@ document.getElementById("clearBtn").addEventListener("click", () => {
 [$letters,$must,$starts,$ends].forEach(el => el.addEventListener("input", () => READY && run()));
 [$minLen,$sortMode,$maxOut].forEach(el => el.addEventListener("change", () => READY && run()));
 
-function normAZ(s){
-  return (s || "").toLowerCase().replace(/[^a-z]/g, "");
-}
-function normLettersWithQ(s){
-  return (s || "").toLowerCase().replace(/[^a-z?]/g, "");
-}
+function normAZ(s){ return (s || "").toLowerCase().replace(/[^a-z]/g, ""); }
+function normLettersWithQ(s){ return (s || "").toLowerCase().replace(/[^a-z?]/g, ""); }
 
 function openDB(){
   return new Promise((resolve, reject) => {
@@ -246,7 +346,7 @@ async function loadDictionary(){
 
     cached = { words };
     await idbSet(db, KEY, cached);
-    $status.textContent = "Dictionary saved for offline use ✅";
+    $status.textContent = "Dictionary saved ✅";
   } else {
     $status.textContent = "Loaded offline dictionary ✅";
   }
@@ -328,7 +428,6 @@ function run(){
   }
 
   const out = [];
-
   for (let i=0;i<DICT.length;i++){
     const w = DICT[i];
     const m = META[i];
