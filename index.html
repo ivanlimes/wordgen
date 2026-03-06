@@ -5,41 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Word Generator</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#111111">
+  <meta name="theme-color" content="#0f4c5c">
+
   <style>
+    :root{
+      --bg:#0f4c5c;        /* dark teal */
+      --panel:#08353d;     /* deeper teal */
+      --panel2:#0b3e47;    /* input surface */
+      --border:#2f7a86;    /* teal border */
+      --text:#e8f6f7;      /* near-white */
+      --muted:#b9d8dc;     /* muted text */
+    }
+
     body{
-font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-margin:16px;
-line-height:1.25;
-background:#0f4c5c;
-color:#e8f6f7;
-}
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      margin:16px;
+      line-height:1.25;
+      background:var(--bg);
+      color:var(--text);
+    }
+
     h1{font-size:18px;margin:0 0 12px 0}
+
     .grid{display:grid;grid-template-columns:1fr;gap:10px}
     .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-   input,button,select{
-background:#0b3e47;
-color:#e8f6f7;
-border:1px solid #2f7a86;
-}
+
+    input,button,select{
+      font-size:18px;
+      padding:10px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:var(--panel2);
+      color:var(--text);
+      outline:none;
+    }
+
     input{flex:1;min-width:240px}
     button{cursor:pointer}
-    small{color:#666}
-   #results{
-white-space:pre;
-font-size:16px;
-padding:12px;
-border:1px solid #2f7a86;
-border-radius:14px;
-min-height:260px;
-overflow:auto;
-background:#08353d;
-color:#e8f6f7;
-}
-    .muted{opacity:.75}
-    .pill{display:inline-block;padding:4px 10px;border:1px solid #ddd;border-radius:999px}
-    .hint{font-size:13px;color:#666;margin-top:-6px}
-    .label{font-size:13px;color:#444;margin:0 0 4px 2px}
+
+    small{color:var(--muted)}
+    .muted{opacity:.9}
+    .pill{
+      display:inline-block;
+      padding:4px 10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:rgba(0,0,0,.08);
+    }
+    .hint{font-size:13px;color:var(--muted);margin-top:-6px}
+    .label{font-size:13px;color:var(--text);margin:0 0 4px 2px}
+
+    #results{
+      white-space:pre;
+      font-size:16px;
+      padding:12px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      min-height:260px;
+      overflow:auto;
+      background:var(--panel);
+      color:var(--text);
+    }
   </style>
 </head>
 <body>
@@ -62,7 +88,7 @@ color:#e8f6f7;
       <div class="label">Must contain</div>
       <input id="mustContain" inputmode="latin" autocomplete="off" autocapitalize="none" spellcheck="false"
         placeholder="e.g., ing" />
-      <div class="hint">Letters here must appear somewhere in the word (counts matter: <span class="pill">oo</span> requires two O’s).</div>
+      <div class="hint">Counts matter: <span class="pill">oo</span> requires two O’s.</div>
     </div>
 
     <div style="flex:1;min-width:220px">
@@ -111,21 +137,12 @@ color:#e8f6f7;
 </div>
 
 <script>
-/*
-  Features added:
-  - ? wildcard blanks (each ? can be any letter)
-  - must contain (counts matter)
-  - starts with / ends with
-  - longest-first sorting
-  - fast checking with packed letter counts
-*/
-
 const DICT_URL = "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt";
 
 // IndexedDB
 const DB_NAME = "WordGenDB";
 const STORE = "kv";
-const KEY = "words_alpha_v2"; // bumped for this upgraded build
+const KEY = "words_alpha_v3"; // bump to force fresh dictionary key if needed
 
 let DICT = [];
 let META = [];
@@ -190,7 +207,6 @@ function idbSet(db, key, val){
   });
 }
 
-// Build packed counts for each word (fast checks)
 function buildMeta(words){
   const meta = new Array(words.length);
   for (let i=0;i<words.length;i++){
@@ -252,9 +268,7 @@ function buildCounts(str){
   return counts;
 }
 
-// Check if word can be formed from rack counts + wildcard count (?)
 function canMakeWithWildcards(wordPackedCounts, rackCounts, wild){
-  // deficit sum across letters must be <= wild
   let deficit = 0;
   for (let p=0;p<wordPackedCounts.length;p+=2){
     const idx = wordPackedCounts[p];
@@ -268,14 +282,10 @@ function canMakeWithWildcards(wordPackedCounts, rackCounts, wild){
   return true;
 }
 
-// Check mustContain counts (counts matter)
 function satisfiesMust(wordPackedCounts, mustCounts){
-  // mustCounts is full 26; verify need <= have for each needed letter
   for (let i=0;i<26;i++){
     const need = mustCounts[i];
     if (!need) continue;
-
-    // Find have in packed
     let have = 0;
     for (let p=0;p<wordPackedCounts.length;p+=2){
       if (wordPackedCounts[p] === i){ have = wordPackedCounts[p+1]; break; }
@@ -307,14 +317,11 @@ function run(){
   const rackCounts = buildCounts(rackLetters);
   const mustCounts = buildCounts(mustStr);
 
-  // If must letters exceed possible length, bail early
-  const mustTotal = mustStr.length;
-  if (mustTotal > rackLen){
+  if (mustStr.length > rackLen){
     $results.textContent = "none";
     return;
   }
 
-  // Quick mask for no-wildcard mode (fast reject)
   let rackMask = 0;
   for (let i=0;i<26;i++){
     if (rackCounts[i]) rackMask |= (1 << i);
@@ -329,17 +336,12 @@ function run(){
     if (m.len > rackLen) continue;
     if (m.len < minLen) continue;
 
-    // starts/ends filter
     if (starts && !w.startsWith(starts)) continue;
     if (ends && !w.endsWith(ends)) continue;
-
-    // must contain filter (counts matter)
     if (mustStr && !satisfiesMust(m.packed, mustCounts)) continue;
 
-    // if no wildcards, reject words that use letters not in rack
     if (wild === 0){
       if ((m.mask & ~rackMask) !== 0) continue;
-      // exact count check
       let ok = true;
       for (let p=0;p<m.packed.length;p+=2){
         const idx = m.packed[p];
@@ -349,7 +351,6 @@ function run(){
       if (!ok) continue;
       out.push(w);
     } else {
-      // with wildcards, allow deficits up to wild
       if (!canMakeWithWildcards(m.packed, rackCounts, wild)) continue;
       out.push(w);
     }
@@ -371,7 +372,6 @@ function run(){
   $results.textContent = out.join("\n");
 }
 
-// Service worker (PWA)
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js").catch(() => {});
