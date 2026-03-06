@@ -9,161 +9,171 @@
 
   <style>
     :root{
-      /* Dark teal theme */
-      --bg:#062a33;
-      --surface:#0a3843;
-      --surface2:#0d4653;
-      --border:#1f7a8c;
-      --text:#e9fbff;
-      --muted:#b7d9df;
-      --shadow: 0 10px 30px rgba(0,0,0,.25);
+  --bg:#062a33;
+  --surface:#0a3843;
+  --surface2:#0d4653;
+  --border:#1f7a8c;
+  --text:#e9fbff;
+  --muted:#b7d9df;
+  --shadow: 0 10px 30px rgba(0,0,0,.25);
 
-      /* Spacing + sizing */
-      --r:14px;
-      --pad:12px;
-      --gap:12px;
-    }
+  --r:14px;
+  --gap:12px;
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      line-height:1.35;
-    }
+  /* Mobile-friendly sizing */
+  --fs:16px;
+  --tap:44px; /* minimum comfortable tap height */
+}
 
-    .wrap{
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 16px;
-      display:flex;
-      flex-direction:column;
-      gap: 14px;
-    }
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  line-height:1.35;
+}
 
-    header{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap: 12px;
-    }
+.wrap{
+  max-width: 980px;
+  margin: 0 auto;
 
-    .title{
-      display:flex;
-      flex-direction:column;
-      gap: 2px;
-    }
-    h1{
-      margin:0;
-      font-size:18px;
-      letter-spacing:.3px;
-    }
-    .sub{
-      color:var(--muted);
-      font-size:13px;
-    }
+  /* iPhone safe-area padding */
+  padding:
+    calc(16px + env(safe-area-inset-top))
+    calc(16px + env(safe-area-inset-right))
+    calc(16px + env(safe-area-inset-bottom))
+    calc(16px + env(safe-area-inset-left));
 
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      border:1px solid rgba(31,122,140,.55);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
-      padding: 14px;
-    }
+  display:flex;
+  flex-direction:column;
+  gap: 14px;
+}
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap: var(--gap);
-    }
+header{
+  display:flex;
+  flex-direction:column; /* mobile first */
+  gap: 6px;
+}
 
-    /* Responsive: 2 columns on medium screens, 3 on large */
-    @media (min-width: 720px){
-      .grid.cols-2{grid-template-columns: 1fr 1fr}
-      .grid.cols-3{grid-template-columns: 1fr 1fr 1fr}
-    }
+.title{display:flex;flex-direction:column;gap:2px}
+h1{margin:0;font-size:18px;letter-spacing:.3px}
+.sub{color:var(--muted);font-size:13px}
 
-    label{
-      display:block;
-      font-size:12px;
-      color:var(--muted);
-      margin: 0 0 6px 2px;
-      letter-spacing:.2px;
-    }
+.card{
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+  border:1px solid rgba(31,122,140,.55);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
 
-    input, select, button{
-      width:100%;
-      font-size:16px;
-      padding: 11px 12px;
-      border-radius: 12px;
-      border:1px solid rgba(31,122,140,.8);
-      background: var(--surface);
-      color: var(--text);
-      outline: none;
-    }
-    input:focus, select:focus{
-      border-color: rgba(233,251,255,.85);
-    }
+/* MOBILE FIRST: 1 column always */
+.grid{display:grid;grid-template-columns:1fr;gap:var(--gap)}
+.controls{display:grid;grid-template-columns:1fr;gap:var(--gap)}
 
-    .row{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
+label{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin: 0 0 6px 2px;
+  letter-spacing:.2px;
+}
 
-    .btn{
-      background: var(--surface2);
-      cursor:pointer;
-      font-weight:600;
-      letter-spacing:.2px;
-    }
-    .btn:active{transform: translateY(1px)}
+input, select, button{
+  width:100%;
+  font-size: var(--fs);
+  min-height: var(--tap);
+  padding: 12px 12px;
+  border-radius: 12px;
+  border:1px solid rgba(31,122,140,.8);
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+}
 
-    .hint{
-      margin-top: 8px;
-      font-size: 13px;
-      color: var(--muted);
-    }
+input::placeholder{color:rgba(183,217,223,.75)}
 
-    .pill{
-      display:inline-block;
-      padding: 2px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(31,122,140,.8);
-      background: rgba(0,0,0,.12);
-      color: var(--text);
-      font-size: 12px;
-      vertical-align: middle;
-    }
+input:focus, select:focus{
+  border-color: rgba(233,251,255,.85);
+}
 
-    .status{
-      font-size:13px;
-      color: var(--muted);
-    }
+/* Make rows stack cleanly on phone */
+.row{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:stretch;
+}
 
-    #results{
-      white-space: pre;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 14px;
-      line-height: 1.4;             /* prevents “lines touching” */
-      padding: 12px;
-      border-radius: 12px;
-      border:1px solid rgba(31,122,140,.8);
-      background: rgba(0,0,0,.18);
-      min-height: 280px;
-      overflow:auto;
-    }
+.btn{
+  background: var(--surface2);
+  cursor:pointer;
+  font-weight:600;
+  letter-spacing:.2px;
+}
+.btn:active{transform: translateY(1px)}
 
-    .controls{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap: var(--gap);
-    }
-    @media (min-width: 720px){
-      .controls{grid-template-columns: 1fr 1fr 1fr}
-    }
+.hint{
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.pill{
+  display:inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border:1px solid rgba(31,122,140,.8);
+  background: rgba(0,0,0,.12);
+  color: var(--text);
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+.status{font-size:13px;color:var(--muted)}
+
+#results{
+  white-space: pre-wrap;     /* IMPORTANT: wraps on phone, no horizontal scroll */
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 12px;
+  border-radius: 12px;
+  border:1px solid rgba(31,122,140,.8);
+  background: rgba(0,0,0,.18);
+  min-height: 280px;
+  max-height: 55vh;          /* keeps it from becoming a mile tall */
+  overflow:auto;
+}
+
+/* TABLET/DESKTOP UPGRADES */
+@media (min-width: 720px){
+  header{
+    flex-direction:row;
+    align-items:flex-end;
+    justify-content:space-between;
+  }
+
+  .row{
+    flex-direction:row;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .grid.cols-2{grid-template-columns: 1fr 1fr}
+  .grid.cols-3{grid-template-columns: 1fr 1fr 1fr}
+  .controls{grid-template-columns: 1fr 1fr 1fr}
+}
+
+/* Small phone tweak */
+@media (max-width: 380px){
+  h1{font-size:17px}
+  .sub{font-size:12px}
+  #results{font-size:13px}
+}
   </style>
 </head>
 <body>
