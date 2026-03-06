@@ -2,201 +2,203 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>WordGen</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0b3a44">
 
   <style>
     :root{
-  --bg:#062a33;
-  --surface:#0a3843;
-  --surface2:#0d4653;
-  --border:#1f7a8c;
-  --text:#e9fbff;
-  --muted:#b7d9df;
-  --shadow: 0 10px 30px rgba(0,0,0,.25);
+      --bg:#062a33;
+      --surface:#0a3843;
+      --surface2:#0d4653;
+      --border:#1f7a8c;
+      --text:#e9fbff;
+      --muted:#b7d9df;
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
 
-  --r:14px;
-  --gap:12px;
+      --r:14px;
+      --gap:12px;
+      --tap:44px;
+    }
 
-  /* Mobile-friendly sizing */
-  --fs:16px;
-  --tap:44px; /* minimum comfortable tap height */
-}
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:100%}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      line-height:1.35;
+    }
 
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  line-height:1.35;
-}
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      padding:
+        calc(16px + env(safe-area-inset-top))
+        calc(16px + env(safe-area-inset-right))
+        calc(16px + env(safe-area-inset-bottom))
+        calc(16px + env(safe-area-inset-left));
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
+    }
 
-.wrap{
-  max-width: 980px;
-  margin: 0 auto;
+    header{
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+    }
+    @media (min-width: 720px){
+      header{flex-direction:row;align-items:flex-end;justify-content:space-between}
+    }
 
-  /* iPhone safe-area padding */
-  padding:
-    calc(16px + env(safe-area-inset-top))
-    calc(16px + env(safe-area-inset-right))
-    calc(16px + env(safe-area-inset-bottom))
-    calc(16px + env(safe-area-inset-left));
+    .title{display:flex;flex-direction:column;gap:2px}
+    h1{margin:0;font-size:18px;letter-spacing:.3px}
+    .sub{color:var(--muted);font-size:13px}
 
-  display:flex;
-  flex-direction:column;
-  gap: 14px;
-}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid rgba(31,122,140,.55);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
 
-header{
-  display:flex;
-  flex-direction:column; /* mobile first */
-  gap: 6px;
-}
+    .grid{display:grid;grid-template-columns:1fr;gap:var(--gap)}
+    .controls{display:grid;grid-template-columns:1fr;gap:var(--gap)}
 
-.title{display:flex;flex-direction:column;gap:2px}
-h1{margin:0;font-size:18px;letter-spacing:.3px}
-.sub{color:var(--muted);font-size:13px}
+    @media (min-width: 720px){
+      .grid.cols-2{grid-template-columns:1fr 1fr}
+      .grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+      .controls{grid-template-columns:1fr 1fr 1fr}
+    }
 
-.card{
-  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-  border:1px solid rgba(31,122,140,.55);
-  border-radius: var(--r);
-  box-shadow: var(--shadow);
-  padding: 14px;
-}
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin: 0 0 6px 2px;
+      letter-spacing:.2px;
+    }
 
-/* MOBILE FIRST: 1 column always */
-.grid{display:grid;grid-template-columns:1fr;gap:var(--gap)}
-.controls{display:grid;grid-template-columns:1fr;gap:var(--gap)}
+    input, select, button{
+      width:100%;
+      font-size:16px;
+      min-height:var(--tap);
+      padding: 12px 12px;
+      border-radius: 12px;
+      border:1px solid rgba(31,122,140,.8);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+    }
+    input::placeholder{color:rgba(183,217,223,.75)}
+    input:focus, select:focus{border-color: rgba(233,251,255,.85)}
 
-label{
-  display:block;
-  font-size:12px;
-  color:var(--muted);
-  margin: 0 0 6px 2px;
-  letter-spacing:.2px;
-}
+    .row{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:stretch;
+    }
+    @media (min-width: 720px){
+      .row{flex-direction:row;flex-wrap:wrap;align-items:center}
+    }
 
-input, select, button{
-  width:100%;
-  font-size: var(--fs);
-  min-height: var(--tap);
-  padding: 12px 12px;
-  border-radius: 12px;
-  border:1px solid rgba(31,122,140,.8);
-  background: var(--surface);
-  color: var(--text);
-  outline: none;
-}
+    .btn{
+      background: var(--surface2);
+      cursor:pointer;
+      font-weight:600;
+      letter-spacing:.2px;
+      width:auto;
+      min-width:110px;
+    }
+    .btn:active{transform: translateY(1px)}
 
-input::placeholder{color:rgba(183,217,223,.75)}
+    .hint{
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
 
-input:focus, select:focus{
-  border-color: rgba(233,251,255,.85);
-}
+    .pill{
+      display:inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(31,122,140,.8);
+      background: rgba(0,0,0,.12);
+      color: var(--text);
+      font-size: 12px;
+      vertical-align: middle;
+    }
 
-/* Make rows stack cleanly on phone */
-.row{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  align-items:stretch;
-}
+    .status{font-size:13px;color:var(--muted)}
 
-.btn{
-  background: var(--surface2);
-  cursor:pointer;
-  font-weight:600;
-  letter-spacing:.2px;
-}
-.btn:active{transform: translateY(1px)}
+    #results{
+      white-space: pre-wrap;      /* wraps on phone */
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 12px;
+      border-radius: 12px;
+      border:1px solid rgba(31,122,140,.8);
+      background: rgba(0,0,0,.18);
+      min-height: 280px;
+      max-height: 55vh;
+      overflow:auto;
+    }
 
-.hint{
-  margin-top: 8px;
-  font-size: 13px;
-  color: var(--muted);
-}
+    .mini{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
 
-.pill{
-  display:inline-block;
-  padding: 2px 10px;
-  border-radius: 999px;
-  border:1px solid rgba(31,122,140,.8);
-  background: rgba(0,0,0,.12);
-  color: var(--text);
-  font-size: 12px;
-  vertical-align: middle;
-}
-
-.status{font-size:13px;color:var(--muted)}
-
-#results{
-  white-space: pre-wrap;     /* IMPORTANT: wraps on phone, no horizontal scroll */
-  word-break: break-word;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size: 14px;
-  line-height: 1.5;
-  padding: 12px;
-  border-radius: 12px;
-  border:1px solid rgba(31,122,140,.8);
-  background: rgba(0,0,0,.18);
-  min-height: 280px;
-  max-height: 55vh;          /* keeps it from becoming a mile tall */
-  overflow:auto;
-}
-
-/* TABLET/DESKTOP UPGRADES */
-@media (min-width: 720px){
-  header{
-    flex-direction:row;
-    align-items:flex-end;
-    justify-content:space-between;
-  }
-
-  .row{
-    flex-direction:row;
-    flex-wrap:wrap;
-    align-items:center;
-  }
-
-  .grid.cols-2{grid-template-columns: 1fr 1fr}
-  .grid.cols-3{grid-template-columns: 1fr 1fr 1fr}
-  .controls{grid-template-columns: 1fr 1fr 1fr}
-}
-
-/* Small phone tweak */
-@media (max-width: 380px){
-  h1{font-size:17px}
-  .sub{font-size:12px}
-  #results{font-size:13px}
-}
+    .checkrow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .checkrow input[type="checkbox"]{
+      width:auto;
+      min-height:auto;
+      height:18px;
+      transform: translateY(1px);
+      accent-color: var(--border);
+    }
   </style>
 </head>
-<body>
 
+<body>
 <div class="wrap">
 
   <header>
     <div class="title">
       <h1>WordGen</h1>
-      <div class="sub">Use ? as a blank. Filter with must-contain, starts-with, ends-with.</div>
+      <div class="sub">Anagram solver + constraints + Scrabble scoring.</div>
     </div>
     <div class="status" id="status">Loading…</div>
   </header>
 
   <div class="card">
     <div class="grid cols-2">
+
       <div>
-        <label>Letters (use ? as wildcard)</label>
+        <label>Letters (use ? as wildcard blanks)</label>
         <div class="row">
-          <input id="letters" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="stare??" />
-          <button class="btn" id="clearBtn" type="button" style="width:auto;min-width:110px">Clear</button>
+          <input id="letters" inputmode="text" autocomplete="off" autocapitalize="none" spellcheck="false"
+                 placeholder="stare??" />
+          <button class="btn" id="clearBtn" type="button">Clear</button>
         </div>
-        <div class="hint">Example: <span class="pill">stare?</span> = stare + one blank letter.</div>
+        <div class="hint">Example: <span class="pill">stare?</span> = stare + one blank. Blanks score <span class="pill">0</span> points.</div>
       </div>
 
       <div class="grid cols-3" style="align-content:start">
@@ -213,21 +215,42 @@ input:focus, select:focus{
           <input id="endsWith" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ed" />
         </div>
       </div>
+
+    </div>
+
+    <div class="grid cols-3" style="margin-top:14px">
+      <div>
+        <label>Pattern (use ? for unknown)</label>
+        <input id="pattern" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="??a??e" />
+        <div class="hint">Pattern is positional. Example: <span class="pill">c??t</span> matches “coat”, “cast”, etc.</div>
+      </div>
+
+      <div>
+        <label>Exclude letters (must NOT contain)</label>
+        <input id="exclude" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="xyz" />
+      </div>
+
+      <div>
+        <label>Length controls</label>
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px">
+          <input id="minLen" inputmode="numeric" placeholder="Min" />
+          <input id="maxLen" inputmode="numeric" placeholder="Max" />
+        </div>
+        <div class="mini checkrow">
+          <label style="margin:0;display:flex;gap:8px;align-items:center">
+            <input id="exactLenToggle" type="checkbox">
+            Exact length (use Min only)
+          </label>
+        </div>
+      </div>
     </div>
 
     <div class="controls" style="margin-top:14px">
       <div>
-        <label>Min length</label>
-        <select id="minLen">
-          <option>2</option><option>3</option><option>4</option><option>5</option>
-          <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
-        </select>
-      </div>
-
-      <div>
         <label>Sort</label>
         <select id="sortMode">
-          <option value="long" selected>Longest first</option>
+          <option value="score" selected>Score (Scrabble)</option>
+          <option value="long">Longest first</option>
           <option value="alpha">A→Z</option>
         </select>
       </div>
@@ -241,7 +264,17 @@ input:focus, select:focus{
           <option value="999999">all</option>
         </select>
       </div>
+
+      <div>
+        <label>Output</label>
+        <select id="outMode">
+          <option value="pretty" selected>word — len — score</option>
+          <option value="words">words only</option>
+        </select>
+      </div>
     </div>
+
+    <div class="mini" id="metaLine"></div>
   </div>
 
   <div class="card">
@@ -251,42 +284,128 @@ input:focus, select:focus{
 </div>
 
 <script>
+/* -----------------------------
+   WordGen V2
+   - rack letters + ? wildcards
+   - must contain / starts / ends
+   - pattern (positional ?)
+   - exclude letters
+   - min/max/exact length
+   - scrabble scoring (blanks score 0)
+   - save settings to localStorage
+   - dictionary cached in IndexedDB
+-------------------------------- */
+
 const DICT_URL = "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt";
 
 // IndexedDB
 const DB_NAME = "WordGenDB";
 const STORE = "kv";
-const KEY = "words_alpha_v4"; // bump to avoid old cached key collisions
+const KEY = "words_alpha_v5"; // bump for this upgrade build
+
+// Service worker / cache-busting handled by sw.js version
+const SETTINGS_KEY = "wordgen_settings_v2";
 
 let DICT = [];
 let META = [];
 let READY = false;
 
+// Scrabble letter points
+const PTS = {
+  a:1,b:3,c:3,d:2,e:1,f:4,g:2,h:4,i:1,j:8,k:5,l:1,m:3,n:1,o:1,p:3,q:10,r:1,s:1,t:1,u:1,v:4,w:4,x:8,y:4,z:10
+};
+
 const $letters = document.getElementById("letters");
 const $must = document.getElementById("mustContain");
 const $starts = document.getElementById("startsWith");
 const $ends = document.getElementById("endsWith");
+const $pattern = document.getElementById("pattern");
+const $exclude = document.getElementById("exclude");
+const $minLen = document.getElementById("minLen");
+const $maxLen = document.getElementById("maxLen");
+const $exactToggle = document.getElementById("exactLenToggle");
+const $sortMode = document.getElementById("sortMode");
+const $maxOut = document.getElementById("maxOut");
+const $outMode = document.getElementById("outMode");
 const $results = document.getElementById("results");
-const $status  = document.getElementById("status");
-const $minLen  = document.getElementById("minLen");
-const $sortMode= document.getElementById("sortMode");
-const $maxOut  = document.getElementById("maxOut");
+const $status = document.getElementById("status");
+const $metaLine = document.getElementById("metaLine");
 
 document.getElementById("clearBtn").addEventListener("click", () => {
   $letters.value = "";
   $must.value = "";
   $starts.value = "";
   $ends.value = "";
+  $pattern.value = "";
+  $exclude.value = "";
+  $minLen.value = "";
+  $maxLen.value = "";
+  $exactToggle.checked = false;
+  $sortMode.value = "score";
+  $maxOut.value = "5000";
+  $outMode.value = "pretty";
   $results.textContent = "";
+  saveSettings();
   $letters.focus();
 });
 
-[$letters,$must,$starts,$ends].forEach(el => el.addEventListener("input", () => READY && run()));
-[$minLen,$sortMode,$maxOut].forEach(el => el.addEventListener("change", () => READY && run()));
+[
+  $letters,$must,$starts,$ends,$pattern,$exclude,
+  $minLen,$maxLen,$exactToggle,$sortMode,$maxOut,$outMode
+].forEach(el => {
+  el.addEventListener(el.type === "checkbox" ? "change" : "input", () => {
+    if (!READY) return;
+    saveSettings();
+    run();
+  });
+});
 
+// ---- normalization helpers ----
 function normAZ(s){ return (s || "").toLowerCase().replace(/[^a-z]/g, ""); }
 function normLettersWithQ(s){ return (s || "").toLowerCase().replace(/[^a-z?]/g, ""); }
+function normPattern(s){ return (s || "").toLowerCase().replace(/[^a-z?]/g, ""); }
 
+// ---- localStorage settings ----
+function saveSettings(){
+  const payload = {
+    letters:$letters.value,
+    must:$must.value,
+    starts:$starts.value,
+    ends:$ends.value,
+    pattern:$pattern.value,
+    exclude:$exclude.value,
+    minLen:$minLen.value,
+    maxLen:$maxLen.value,
+    exact:$exactToggle.checked,
+    sort:$sortMode.value,
+    maxOut:$maxOut.value,
+    outMode:$outMode.value
+  };
+  try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(payload)); }catch{}
+}
+function loadSettings(){
+  try{
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (!s || typeof s !== "object") return;
+
+    $letters.value = s.letters ?? "";
+    $must.value = s.must ?? "";
+    $starts.value = s.starts ?? "";
+    $ends.value = s.ends ?? "";
+    $pattern.value = s.pattern ?? "";
+    $exclude.value = s.exclude ?? "";
+    $minLen.value = s.minLen ?? "";
+    $maxLen.value = s.maxLen ?? "";
+    $exactToggle.checked = !!s.exact;
+    $sortMode.value = s.sort ?? "score";
+    $maxOut.value = s.maxOut ?? "5000";
+    $outMode.value = s.outMode ?? "pretty";
+  }catch{}
+}
+
+// ---- IndexedDB helpers ----
 function openDB(){
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, 1);
@@ -317,22 +436,25 @@ function idbSet(db, key, val){
   });
 }
 
+// Build packed counts for each word (fast checks)
 function buildMeta(words){
   const meta = new Array(words.length);
   for (let i=0;i<words.length;i++){
     const w = words[i];
     const counts = new Uint8Array(26);
     let mask = 0;
+    let score = 0;
     for (let j=0;j<w.length;j++){
       const c = w.charCodeAt(j) - 97;
       counts[c]++;
       mask |= (1 << c);
+      score += PTS[w[j]] || 0;
     }
     const packed = [];
     for (let k=0;k<26;k++){
       if (counts[k]) packed.push(k, counts[k]);
     }
-    meta[i] = { len: w.length, mask, packed };
+    meta[i] = { len:w.length, mask, packed, score };
   }
   return meta;
 }
@@ -378,119 +500,222 @@ function buildCounts(str){
   return counts;
 }
 
-function canMakeWithWildcards(wordPackedCounts, rackCounts, wild){
-  let deficit = 0;
-  for (let p=0;p<wordPackedCounts.length;p+=2){
-    const idx = wordPackedCounts[p];
-    const need = wordPackedCounts[p+1];
+// Returns deficit letters (as point values) that must be covered by blanks
+function blankDeficits(wordPacked, rackCounts){
+  const deficits = [];
+  for (let p=0;p<wordPacked.length;p+=2){
+    const idx = wordPacked[p];
+    const need = wordPacked[p+1];
     const have = rackCounts[idx];
-    if (need > have) {
-      deficit += (need - have);
-      if (deficit > wild) return false;
+    if (need > have){
+      const ch = String.fromCharCode(97 + idx);
+      const pts = PTS[ch] || 0;
+      const times = need - have;
+      for (let t=0;t<times;t++) deficits.push(pts);
     }
+  }
+  return deficits;
+}
+
+// Can make word with rack + wildcards, and compute scrabble score with blanks = 0
+function canMakeAndScore(meta, rackCounts, wild){
+  // quick reject: if wild=0 and word uses letters not present
+  // (we still do count check below, so this is just a speed shortcut)
+  // Note: callers also filter by length etc.
+  if (wild === 0){
+    for (let p=0;p<meta.packed.length;p+=2){
+      const idx = meta.packed[p];
+      const need = meta.packed[p+1];
+      if (need > rackCounts[idx]) return null;
+    }
+    return { score: meta.score, blanksUsed: 0 };
+  }
+
+  const deficits = blankDeficits(meta.packed, rackCounts);
+  const blanksUsed = deficits.length;
+  if (blanksUsed > wild) return null;
+
+  // blanks score 0 => subtract the points of the deficit letters (they become blank tiles)
+  // deficits are fixed by letter shortfalls; no guessing.
+  const scoreWithBlanks = meta.score - deficits.reduce((a,b)=>a+b,0);
+  return { score: scoreWithBlanks, blanksUsed };
+}
+
+function matchesPattern(word, pattern){
+  if (!pattern) return true;
+  if (word.length !== pattern.length) return false;
+  for (let i=0;i<pattern.length;i++){
+    const p = pattern[i];
+    if (p === "?") continue;
+    if (word[i] !== p) return false;
   }
   return true;
 }
 
-function satisfiesMust(wordPackedCounts, mustCounts){
+function satisfiesMust(wordPacked, mustCounts){
   for (let i=0;i<26;i++){
     const need = mustCounts[i];
     if (!need) continue;
     let have = 0;
-    for (let p=0;p<wordPackedCounts.length;p+=2){
-      if (wordPackedCounts[p] === i){ have = wordPackedCounts[p+1]; break; }
+    for (let p=0;p<wordPacked.length;p+=2){
+      if (wordPacked[p] === i){ have = wordPacked[p+1]; break; }
     }
     if (have < need) return false;
   }
   return true;
 }
 
+function hasExcluded(wordPacked, excludeCounts){
+  for (let i=0;i<26;i++){
+    if (!excludeCounts[i]) continue;
+    // if excluded letter exists at least once, reject
+    for (let p=0;p<wordPacked.length;p+=2){
+      if (wordPacked[p] === i) return true;
+    }
+  }
+  return false;
+}
+
+function parseLen(val, fallback){
+  const n = parseInt(val, 10);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+}
+
 function run(){
   const rackRaw = normLettersWithQ($letters.value);
   if (!rackRaw){
     $results.textContent = "";
+    $metaLine.textContent = "";
     return;
   }
 
   const starts = normAZ($starts.value);
   const ends = normAZ($ends.value);
   const mustStr = normAZ($must.value);
+  const pattern = normPattern($pattern.value);
+  const excludeStr = normAZ($exclude.value);
 
-  const minLen = parseInt($minLen.value, 10);
+  const exact = $exactToggle.checked;
+  const minLen = parseLen($minLen.value, 2);
+  const maxLen = exact ? minLen : parseLen($maxLen.value, 99);
   const sortMode = $sortMode.value;
-  const maxOut = parseInt($maxOut.value, 10);
+  const maxOut = parseInt($maxOut.value, 10) || 5000;
+  const outMode = $outMode.value;
 
   const wild = (rackRaw.match(/\?/g) || []).length;
   const rackLetters = rackRaw.replace(/\?/g, "");
   const rackLen = rackRaw.length;
 
+  // Length sanity: rackLen is a hard cap for anagram mode
+  const effectiveMax = Math.min(maxLen, rackLen);
+
   const rackCounts = buildCounts(rackLetters);
   const mustCounts = buildCounts(mustStr);
+  const excludeCounts = buildCounts(excludeStr);
 
   if (mustStr.length > rackLen){
     $results.textContent = "none";
+    $metaLine.textContent = "";
     return;
   }
 
+  // quick mask of available letters (for wild=0 speed checks)
   let rackMask = 0;
-  for (let i=0;i<26;i++){
-    if (rackCounts[i]) rackMask |= (1 << i);
-  }
+  for (let i=0;i<26;i++) if (rackCounts[i]) rackMask |= (1 << i);
 
   const out = [];
+  let scanned = 0;
+
   for (let i=0;i<DICT.length;i++){
     const w = DICT[i];
     const m = META[i];
+    scanned++;
 
+    // Length filters
     if (m.len > rackLen) continue;
     if (m.len < minLen) continue;
+    if (m.len > effectiveMax) continue;
 
+    // Prefix / suffix
     if (starts && !w.startsWith(starts)) continue;
     if (ends && !w.endsWith(ends)) continue;
+
+    // Pattern (positional)
+    if (pattern && !matchesPattern(w, pattern)) continue;
+
+    // Must contain
     if (mustStr && !satisfiesMust(m.packed, mustCounts)) continue;
 
-    if (wild === 0){
-      if ((m.mask & ~rackMask) !== 0) continue;
-      let ok = true;
-      for (let p=0;p<m.packed.length;p+=2){
-        const idx = m.packed[p];
-        const need = m.packed[p+1];
-        if (need > rackCounts[idx]) { ok = false; break; }
-      }
-      if (!ok) continue;
-      out.push(w);
-    } else {
-      if (!canMakeWithWildcards(m.packed, rackCounts, wild)) continue;
-      out.push(w);
-    }
+    // Exclude letters
+    if (excludeStr && hasExcluded(m.packed, excludeCounts)) continue;
+
+    // If no wildcards, reject words using letters not present
+    if (wild === 0 && ((m.mask & ~rackMask) !== 0)) continue;
+
+    // Rack feasibility + scoring (blanks=0)
+    const scored = canMakeAndScore(m, rackCounts, wild);
+    if (!scored) continue;
+
+    out.push({
+      word: w,
+      len: m.len,
+      score: scored.score,
+      blanksUsed: scored.blanksUsed
+    });
 
     if (out.length >= maxOut) break;
   }
 
   if (out.length === 0){
     $results.textContent = "none";
+    $metaLine.textContent = "";
     return;
   }
 
+  // Sort
   if (sortMode === "alpha"){
-    out.sort();
-  } else {
-    out.sort((a,b) => (b.length - a.length) || (a < b ? -1 : a > b ? 1 : 0));
+    out.sort((a,b) => a.word.localeCompare(b.word));
+  } else if (sortMode === "long"){
+    out.sort((a,b) => (b.len - a.len) || a.word.localeCompare(b.word));
+  } else { // score
+    out.sort((a,b) => (b.score - a.score) || (b.len - a.len) || a.word.localeCompare(b.word));
   }
 
-  $results.textContent = out.join("\n");
+  // Output formatting
+  if (outMode === "words"){
+    $results.textContent = out.map(x => x.word).join("\n");
+  } else {
+    $results.textContent = out.map(x => {
+      const blankTag = x.blanksUsed ? ` — blanks:${x.blanksUsed}` : "";
+      return `${x.word} — len:${x.len} — score:${x.score}${blankTag}`;
+    }).join("\n");
+  }
+
+  // Meta line
+  const parts = [];
+  parts.push(`<span class="pill">${out.length.toLocaleString()} results</span>`);
+  parts.push(`<span class="pill">rack:${rackLen} (?:${wild})</span>`);
+  if (pattern) parts.push(`<span class="pill">pattern:${pattern}</span>`);
+  if (starts) parts.push(`<span class="pill">starts:${starts}</span>`);
+  if (ends) parts.push(`<span class="pill">ends:${ends}</span>`);
+  if (mustStr) parts.push(`<span class="pill">must:${mustStr}</span>`);
+  if (excludeStr) parts.push(`<span class="pill">exclude:${excludeStr}</span>`);
+  parts.push(`<span class="pill">len:${minLen}-${effectiveMax}${exact ? " (exact)" : ""}</span>`);
+  $metaLine.innerHTML = parts.join(" ");
 }
 
+// PWA registration
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js").catch(() => {});
   });
 }
 
-loadDictionary().catch(err => {
-  $status.textContent = "Error: " + (err?.message || String(err));
-});
+// boot
+loadSettings();
+loadDictionary()
+  .then(() => { run(); })
+  .catch(err => { $status.textContent = "Error: " + (err?.message || String(err)); });
 </script>
-
 </body>
 </html>
