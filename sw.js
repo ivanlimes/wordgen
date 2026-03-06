@@ -1,4 +1,4 @@
-const CACHE = "wordgen-cache-v4";
+const CACHE = "wordgen-cache-v5";
 const ASSETS = [
   "./",
   "./index.html",
