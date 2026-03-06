@@ -9,171 +9,38 @@
 
   <style>
     :root{
-      --bg:#062a33;
-      --surface:#0a3843;
-      --surface2:#0d4653;
-      --border:#1f7a8c;
-      --text:#e9fbff;
-      --muted:#b7d9df;
-      --shadow: 0 10px 30px rgba(0,0,0,.25);
-
-      --r:14px;
-      --gap:12px;
-      --tap:44px;
+      --bg:#062a33; --surface:#0a3843; --surface2:#0d4653; --border:#1f7a8c;
+      --text:#e9fbff; --muted:#b7d9df; --shadow:0 10px 30px rgba(0,0,0,.25);
+      --r:14px; --gap:12px; --tap:44px;
     }
-
     *{box-sizing:border-box}
     html{-webkit-text-size-adjust:100%}
-    body{
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      line-height:1.35;
-    }
-
-    .wrap{
-      max-width: 980px;
-      margin: 0 auto;
-      padding:
-        calc(16px + env(safe-area-inset-top))
-        calc(16px + env(safe-area-inset-right))
-        calc(16px + env(safe-area-inset-bottom))
-        calc(16px + env(safe-area-inset-left));
-      display:flex;
-      flex-direction:column;
-      gap: 14px;
-    }
-
-    header{
-      display:flex;
-      flex-direction:column;
-      gap: 6px;
-    }
-    @media (min-width: 720px){
-      header{flex-direction:row;align-items:flex-end;justify-content:space-between}
-    }
-
+    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.35}
+    .wrap{max-width:980px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));display:flex;flex-direction:column;gap:14px}
+    header{display:flex;flex-direction:column;gap:6px}
+    @media (min-width:720px){header{flex-direction:row;align-items:flex-end;justify-content:space-between}}
     .title{display:flex;flex-direction:column;gap:2px}
     h1{margin:0;font-size:18px;letter-spacing:.3px}
     .sub{color:var(--muted);font-size:13px}
-
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      border:1px solid rgba(31,122,140,.55);
-      border-radius: var(--r);
-      box-shadow: var(--shadow);
-      padding: 14px;
-    }
-
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));border:1px solid rgba(31,122,140,.55);border-radius:var(--r);box-shadow:var(--shadow);padding:14px}
     .grid{display:grid;grid-template-columns:1fr;gap:var(--gap)}
     .controls{display:grid;grid-template-columns:1fr;gap:var(--gap)}
-
-    @media (min-width: 720px){
-      .grid.cols-2{grid-template-columns:1fr 1fr}
-      .grid.cols-3{grid-template-columns:1fr 1fr 1fr}
-      .controls{grid-template-columns:1fr 1fr 1fr}
-    }
-
-    label{
-      display:block;
-      font-size:12px;
-      color:var(--muted);
-      margin: 0 0 6px 2px;
-      letter-spacing:.2px;
-    }
-
-    input, select, button{
-      width:100%;
-      font-size:16px;
-      min-height:var(--tap);
-      padding: 12px 12px;
-      border-radius: 12px;
-      border:1px solid rgba(31,122,140,.8);
-      background: var(--surface);
-      color: var(--text);
-      outline: none;
-    }
+    @media (min-width:720px){.grid.cols-2{grid-template-columns:1fr 1fr}.grid.cols-3{grid-template-columns:1fr 1fr 1fr}.controls{grid-template-columns:1fr 1fr 1fr}}
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px 2px;letter-spacing:.2px}
+    input,select,button{width:100%;font-size:16px;min-height:var(--tap);padding:12px 12px;border-radius:12px;border:1px solid rgba(31,122,140,.8);background:var(--surface);color:var(--text);outline:none}
     input::placeholder{color:rgba(183,217,223,.75)}
-    input:focus, select:focus{border-color: rgba(233,251,255,.85)}
-
-    .row{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      align-items:stretch;
-    }
-    @media (min-width: 720px){
-      .row{flex-direction:row;flex-wrap:wrap;align-items:center}
-    }
-
-    .btn{
-      background: var(--surface2);
-      cursor:pointer;
-      font-weight:600;
-      letter-spacing:.2px;
-      width:auto;
-      min-width:110px;
-    }
-    .btn:active{transform: translateY(1px)}
-
-    .hint{
-      margin-top: 8px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .pill{
-      display:inline-block;
-      padding: 2px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(31,122,140,.8);
-      background: rgba(0,0,0,.12);
-      color: var(--text);
-      font-size: 12px;
-      vertical-align: middle;
-    }
-
+    input:focus,select:focus{border-color:rgba(233,251,255,.85)}
+    .row{display:flex;flex-direction:column;gap:10px;align-items:stretch}
+    @media (min-width:720px){.row{flex-direction:row;flex-wrap:wrap;align-items:center}}
+    .btn{background:var(--surface2);cursor:pointer;font-weight:600;letter-spacing:.2px;width:auto;min-width:110px}
+    .btn:active{transform:translateY(1px)}
+    .hint{margin-top:8px;font-size:13px;color:var(--muted)}
+    .pill{display:inline-block;padding:2px 10px;border-radius:999px;border:1px solid rgba(31,122,140,.8);background:rgba(0,0,0,.12);color:var(--text);font-size:12px;vertical-align:middle}
     .status{font-size:13px;color:var(--muted)}
-
-    #results{
-      white-space: pre-wrap;      /* wraps on phone */
-      word-break: break-word;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 14px;
-      line-height: 1.5;
-      padding: 12px;
-      border-radius: 12px;
-      border:1px solid rgba(31,122,140,.8);
-      background: rgba(0,0,0,.18);
-      min-height: 280px;
-      max-height: 55vh;
-      overflow:auto;
-    }
-
-    .mini{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .checkrow{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-    .checkrow input[type="checkbox"]{
-      width:auto;
-      min-height:auto;
-      height:18px;
-      transform: translateY(1px);
-      accent-color: var(--border);
-    }
+    #results{white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:14px;line-height:1.5;padding:12px;border-radius:12px;border:1px solid rgba(31,122,140,.8);background:rgba(0,0,0,.18);min-height:280px;max-height:55vh;overflow:auto}
+    .mini{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:13px}
+    .checkrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .checkrow input[type="checkbox"]{width:auto;min-height:auto;height:18px;transform:translateY(1px);accent-color:var(--border)}
   </style>
 </head>
 
@@ -183,7 +50,7 @@
   <header>
     <div class="title">
       <h1>WordGen</h1>
-      <div class="sub">Anagram solver + constraints + Scrabble scoring.</div>
+      <div class="sub">Constraints can add letters to the pool (optional rack).</div>
     </div>
     <div class="status" id="status">Loading…</div>
   </header>
@@ -192,13 +59,15 @@
     <div class="grid cols-2">
 
       <div>
-        <label>Letters (use ? as wildcard blanks)</label>
+        <label>Letters (optional rack; use ? as blanks)</label>
         <div class="row">
           <input id="letters" inputmode="text" autocomplete="off" autocapitalize="none" spellcheck="false"
                  placeholder="stare??" />
           <button class="btn" id="clearBtn" type="button">Clear</button>
         </div>
-        <div class="hint">Example: <span class="pill">stare?</span> = stare + one blank. Blanks score <span class="pill">0</span> points.</div>
+        <div class="hint">
+          This field is optional. Letters from <span class="pill">must/starts/ends/pattern</span> are automatically added to the pool.
+        </div>
       </div>
 
       <div class="grid cols-3" style="align-content:start">
@@ -220,9 +89,9 @@
 
     <div class="grid cols-3" style="margin-top:14px">
       <div>
-        <label>Pattern (use ? for unknown)</label>
+        <label>Pattern (positional; ? unknown)</label>
         <input id="pattern" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="??a??e" />
-        <div class="hint">Pattern is positional. Example: <span class="pill">c??t</span> matches “coat”, “cast”, etc.</div>
+        <div class="hint">Fixed letters in the pattern are added to the pool automatically.</div>
       </div>
 
       <div>
@@ -284,27 +153,14 @@
 </div>
 
 <script>
-/* -----------------------------
-   WordGen V2
-   - rack letters + ? wildcards
-   - must contain / starts / ends
-   - pattern (positional ?)
-   - exclude letters
-   - min/max/exact length
-   - scrabble scoring (blanks score 0)
-   - save settings to localStorage
-   - dictionary cached in IndexedDB
--------------------------------- */
-
 const DICT_URL = "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt";
 
 // IndexedDB
 const DB_NAME = "WordGenDB";
 const STORE = "kv";
-const KEY = "words_alpha_v5"; // bump for this upgrade build
+const KEY = "words_alpha_v6"; // bump for this behavior change
 
-// Service worker / cache-busting handled by sw.js version
-const SETTINGS_KEY = "wordgen_settings_v2";
+const SETTINGS_KEY = "wordgen_settings_v3";
 
 let DICT = [];
 let META = [];
@@ -360,26 +216,18 @@ document.getElementById("clearBtn").addEventListener("click", () => {
   });
 });
 
-// ---- normalization helpers ----
+// normalization
 function normAZ(s){ return (s || "").toLowerCase().replace(/[^a-z]/g, ""); }
 function normLettersWithQ(s){ return (s || "").toLowerCase().replace(/[^a-z?]/g, ""); }
 function normPattern(s){ return (s || "").toLowerCase().replace(/[^a-z?]/g, ""); }
 
-// ---- localStorage settings ----
+// settings
 function saveSettings(){
   const payload = {
-    letters:$letters.value,
-    must:$must.value,
-    starts:$starts.value,
-    ends:$ends.value,
-    pattern:$pattern.value,
-    exclude:$exclude.value,
-    minLen:$minLen.value,
-    maxLen:$maxLen.value,
-    exact:$exactToggle.checked,
-    sort:$sortMode.value,
-    maxOut:$maxOut.value,
-    outMode:$outMode.value
+    letters:$letters.value, must:$must.value, starts:$starts.value, ends:$ends.value,
+    pattern:$pattern.value, exclude:$exclude.value,
+    minLen:$minLen.value, maxLen:$maxLen.value, exact:$exactToggle.checked,
+    sort:$sortMode.value, maxOut:$maxOut.value, outMode:$outMode.value
   };
   try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(payload)); }catch{}
 }
@@ -405,7 +253,7 @@ function loadSettings(){
   }catch{}
 }
 
-// ---- IndexedDB helpers ----
+// IndexedDB helpers
 function openDB(){
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, 1);
@@ -436,7 +284,7 @@ function idbSet(db, key, val){
   });
 }
 
-// Build packed counts for each word (fast checks)
+// Build meta: counts + mask + base score
 function buildMeta(words){
   const meta = new Array(words.length);
   for (let i=0;i<words.length;i++){
@@ -500,13 +348,12 @@ function buildCounts(str){
   return counts;
 }
 
-// Returns deficit letters (as point values) that must be covered by blanks
-function blankDeficits(wordPacked, rackCounts){
+function deficitsPoints(wordPacked, poolCounts){
   const deficits = [];
   for (let p=0;p<wordPacked.length;p+=2){
     const idx = wordPacked[p];
     const need = wordPacked[p+1];
-    const have = rackCounts[idx];
+    const have = poolCounts[idx];
     if (need > have){
       const ch = String.fromCharCode(97 + idx);
       const pts = PTS[ch] || 0;
@@ -517,27 +364,23 @@ function blankDeficits(wordPacked, rackCounts){
   return deficits;
 }
 
-// Can make word with rack + wildcards, and compute scrabble score with blanks = 0
-function canMakeAndScore(meta, rackCounts, wild){
-  // quick reject: if wild=0 and word uses letters not present
-  // (we still do count check below, so this is just a speed shortcut)
-  // Note: callers also filter by length etc.
+// uses POOL counts (which now includes constraint letters) + wild blanks
+function canMakeAndScore(meta, poolCounts, wild){
   if (wild === 0){
     for (let p=0;p<meta.packed.length;p+=2){
       const idx = meta.packed[p];
       const need = meta.packed[p+1];
-      if (need > rackCounts[idx]) return null;
+      if (need > poolCounts[idx]) return null;
     }
     return { score: meta.score, blanksUsed: 0 };
   }
 
-  const deficits = blankDeficits(meta.packed, rackCounts);
-  const blanksUsed = deficits.length;
+  const deficitPts = deficitsPoints(meta.packed, poolCounts);
+  const blanksUsed = deficitPts.length;
   if (blanksUsed > wild) return null;
 
-  // blanks score 0 => subtract the points of the deficit letters (they become blank tiles)
-  // deficits are fixed by letter shortfalls; no guessing.
-  const scoreWithBlanks = meta.score - deficits.reduce((a,b)=>a+b,0);
+  // blanks score 0, so subtract points for letters covered by blanks
+  const scoreWithBlanks = meta.score - deficitPts.reduce((a,b)=>a+b,0);
   return { score: scoreWithBlanks, blanksUsed };
 }
 
@@ -568,7 +411,6 @@ function satisfiesMust(wordPacked, mustCounts){
 function hasExcluded(wordPacked, excludeCounts){
   for (let i=0;i<26;i++){
     if (!excludeCounts[i]) continue;
-    // if excluded letter exists at least once, reject
     for (let p=0;p<wordPacked.length;p+=2){
       if (wordPacked[p] === i) return true;
     }
@@ -581,87 +423,91 @@ function parseLen(val, fallback){
   return Number.isFinite(n) && n > 0 ? n : fallback;
 }
 
-function run(){
-  const rackRaw = normLettersWithQ($letters.value);
-  if (!rackRaw){
-    $results.textContent = "";
-    $metaLine.textContent = "";
-    return;
+/* NEW: build the available pool by ADDING constraint letters */
+function buildPoolCounts(rackRaw, mustStr, starts, ends, pattern){
+  const rackLetters = rackRaw.replace(/\?/g, "");
+  let pool = rackLetters + mustStr + starts + ends;
+
+  // Add fixed letters from pattern (non-?)
+  if (pattern){
+    pool += pattern.replace(/\?/g, "");
   }
 
+  return buildCounts(pool);
+}
+
+function run(){
+  const rackRaw = normLettersWithQ($letters.value); // optional now
   const starts = normAZ($starts.value);
   const ends = normAZ($ends.value);
   const mustStr = normAZ($must.value);
   const pattern = normPattern($pattern.value);
   const excludeStr = normAZ($exclude.value);
 
-  const exact = $exactToggle.checked;
-  const minLen = parseLen($minLen.value, 2);
-  const maxLen = exact ? minLen : parseLen($maxLen.value, 99);
-  const sortMode = $sortMode.value;
-  const maxOut = parseInt($maxOut.value, 10) || 5000;
-  const outMode = $outMode.value;
-
-  const wild = (rackRaw.match(/\?/g) || []).length;
-  const rackLetters = rackRaw.replace(/\?/g, "");
-  const rackLen = rackRaw.length;
-
-  // Length sanity: rackLen is a hard cap for anagram mode
-  const effectiveMax = Math.min(maxLen, rackLen);
-
-  const rackCounts = buildCounts(rackLetters);
-  const mustCounts = buildCounts(mustStr);
-  const excludeCounts = buildCounts(excludeStr);
-
-  if (mustStr.length > rackLen){
-    $results.textContent = "none";
+  // If EVERYTHING is empty, show nothing
+  if (!rackRaw && !starts && !ends && !mustStr && !pattern){
+    $results.textContent = "";
     $metaLine.textContent = "";
     return;
   }
 
-  // quick mask of available letters (for wild=0 speed checks)
-  let rackMask = 0;
-  for (let i=0;i<26;i++) if (rackCounts[i]) rackMask |= (1 << i);
+  const wild = (rackRaw.match(/\?/g) || []).length;
+
+  const exact = $exactToggle.checked;
+  const minLen = parseLen($minLen.value, 2);
+  const maxLen = exact ? minLen : parseLen($maxLen.value, 99);
+
+  const sortMode = $sortMode.value;
+  const maxOut = parseInt($maxOut.value, 10) || 5000;
+  const outMode = $outMode.value;
+
+  // pool counts now includes constraints letters
+  const poolCounts = buildPoolCounts(rackRaw, mustStr, starts, ends, pattern);
+
+  // Determine pool length (hard cap) = total letters in pool + wild
+  const poolLen = (rackRaw.replace(/\?/g,"").length + mustStr.length + starts.length + ends.length + (pattern ? pattern.replace(/\?/g,"").length : 0)) + wild;
+
+  // Effective max length can't exceed poolLen
+  const effectiveMax = Math.min(maxLen, poolLen);
+
+  const mustCounts = buildCounts(mustStr);
+  const excludeCounts = buildCounts(excludeStr);
+
+  // Quick mask (letters that exist in poolCounts)
+  let poolMask = 0;
+  for (let i=0;i<26;i++) if (poolCounts[i]) poolMask |= (1 << i);
 
   const out = [];
-  let scanned = 0;
 
   for (let i=0;i<DICT.length;i++){
     const w = DICT[i];
     const m = META[i];
-    scanned++;
 
-    // Length filters
-    if (m.len > rackLen) continue;
+    // length filters
     if (m.len < minLen) continue;
     if (m.len > effectiveMax) continue;
 
-    // Prefix / suffix
+    // prefix/suffix
     if (starts && !w.startsWith(starts)) continue;
     if (ends && !w.endsWith(ends)) continue;
 
-    // Pattern (positional)
+    // pattern
     if (pattern && !matchesPattern(w, pattern)) continue;
 
-    // Must contain
+    // must contain
     if (mustStr && !satisfiesMust(m.packed, mustCounts)) continue;
 
-    // Exclude letters
+    // exclude
     if (excludeStr && hasExcluded(m.packed, excludeCounts)) continue;
 
-    // If no wildcards, reject words using letters not present
-    if (wild === 0 && ((m.mask & ~rackMask) !== 0)) continue;
+    // if no wildcards, reject words containing letters not in pool at all
+    if (wild === 0 && ((m.mask & ~poolMask) !== 0)) continue;
 
-    // Rack feasibility + scoring (blanks=0)
-    const scored = canMakeAndScore(m, rackCounts, wild);
+    // pool feasibility + scoring
+    const scored = canMakeAndScore(m, poolCounts, wild);
     if (!scored) continue;
 
-    out.push({
-      word: w,
-      len: m.len,
-      score: scored.score,
-      blanksUsed: scored.blanksUsed
-    });
+    out.push({ word:w, len:m.len, score:scored.score, blanksUsed:scored.blanksUsed });
 
     if (out.length >= maxOut) break;
   }
@@ -672,29 +518,29 @@ function run(){
     return;
   }
 
-  // Sort
+  // sort
   if (sortMode === "alpha"){
-    out.sort((a,b) => a.word.localeCompare(b.word));
+    out.sort((a,b)=>a.word.localeCompare(b.word));
   } else if (sortMode === "long"){
-    out.sort((a,b) => (b.len - a.len) || a.word.localeCompare(b.word));
-  } else { // score
-    out.sort((a,b) => (b.score - a.score) || (b.len - a.len) || a.word.localeCompare(b.word));
+    out.sort((a,b)=>(b.len-a.len)||a.word.localeCompare(b.word));
+  } else {
+    out.sort((a,b)=>(b.score-a.score)||(b.len-a.len)||a.word.localeCompare(b.word));
   }
 
-  // Output formatting
+  // output
   if (outMode === "words"){
-    $results.textContent = out.map(x => x.word).join("\n");
+    $results.textContent = out.map(x=>x.word).join("\n");
   } else {
-    $results.textContent = out.map(x => {
+    $results.textContent = out.map(x=>{
       const blankTag = x.blanksUsed ? ` — blanks:${x.blanksUsed}` : "";
       return `${x.word} — len:${x.len} — score:${x.score}${blankTag}`;
     }).join("\n");
   }
 
-  // Meta line
+  // meta line
   const parts = [];
   parts.push(`<span class="pill">${out.length.toLocaleString()} results</span>`);
-  parts.push(`<span class="pill">rack:${rackLen} (?:${wild})</span>`);
+  parts.push(`<span class="pill">pool:${poolLen} (?:${wild})</span>`);
   if (pattern) parts.push(`<span class="pill">pattern:${pattern}</span>`);
   if (starts) parts.push(`<span class="pill">starts:${starts}</span>`);
   if (ends) parts.push(`<span class="pill">ends:${ends}</span>`);
@@ -704,7 +550,7 @@ function run(){
   $metaLine.innerHTML = parts.join(" ");
 }
 
-// PWA registration
+// PWA
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js").catch(() => {});
