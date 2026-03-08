@@ -1,567 +1,238 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>WordGen</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#0b3a44">
-
+  <meta name="theme-color" content="#071C22">
   <style>
     :root{
-      --bg:#062a33; --surface:#0a3843; --surface2:#0d4653; --border:#1f7a8c;
-      --text:#e9fbff; --muted:#b7d9df; --shadow:0 10px 30px rgba(0,0,0,.25);
-      --r:14px; --gap:12px; --tap:44px;
+      color-scheme: light dark;
+      --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --space-2:4px; --space-4:8px; --space-6:12px; --space-8:16px; --space-12:24px; --space-16:32px; --space-20:40px; --space-24:48px; --space-32:64px;
+      --radius-sm:12px; --radius-md:16px; --radius-lg:20px; --radius-pill:999px;
+      --border-width:1px; --focus-ring:0 0 0 2px var(--color-focus-ring);
+      --shadow-soft:0 10px 30px rgba(16,42,51,.08);
+      --app-max:1392px;
+      --topbar-h:64px;
+      --rail-w:392px;
+      --workspace-min:760px;
+      --results-header-h:72px;
+      --results-list-header-h:40px;
+      --results-row-h:56px;
+      --mobile-bar-h:calc(60px + env(safe-area-inset-bottom));
+      --trans-fast:140ms ease;
+      --trans-med:180ms ease;
+
+      --color-bg-app:#F4F8FA;
+      --color-bg-surface-1:#FFFFFF;
+      --color-bg-surface-2:#F8FCFD;
+      --color-bg-surface-3:#EEF6F8;
+      --color-text-primary:#102A33;
+      --color-text-secondary:#5C727A;
+      --color-text-tertiary:#7F949B;
+      --color-text-on-accent:#FFFFFF;
+      --color-accent-primary:#0E7C86;
+      --color-accent-primary-hover:#0B6972;
+      --color-accent-primary-pressed:#095A61;
+      --color-accent-soft:#D9F1F4;
+      --color-border-subtle:#E6EFF2;
+      --color-border-default:#D5E3E8;
+      --color-border-strong:#A8C2CA;
+      --color-focus-ring:#22B8C7;
+      --color-success:#1C8C5E;
+      --color-warning:#C78312;
+      --color-danger:#C54646;
+      --color-selection:#E7F8FB;
+      --color-result-word:#12343C;
+      --color-result-meta:#607A82;
+      --color-result-hover:#F1F8FA;
+      --color-result-selected:#DDF4F7;
+      --theme-shadow:var(--shadow-soft);
+      --backdrop:rgba(6,18,22,.48);
+      --header-fade:linear-gradient(180deg, rgba(244,248,250,.98), rgba(244,248,250,.82));
+      --status-ready-bg:rgba(28,140,94,.12);
+      --status-ready-txt:#1C8C5E;
+      --status-loading-bg:rgba(199,131,18,.12);
+      --status-loading-txt:#8C5A0E;
+      --status-error-bg:rgba(197,70,70,.12);
+      --status-error-txt:#A23131;
     }
+
+    html[data-theme="dark"]{
+      --color-bg-app:#071C22;
+      --color-bg-surface-1:#0D2A32;
+      --color-bg-surface-2:#123541;
+      --color-bg-surface-3:#173E4C;
+      --color-text-primary:#E7F2F4;
+      --color-text-secondary:#A7BEC4;
+      --color-text-tertiary:#7F9DA4;
+      --color-text-on-accent:#062126;
+      --color-accent-primary:#29B7C6;
+      --color-accent-primary-hover:#45C7D3;
+      --color-accent-primary-pressed:#1DA6B5;
+      --color-accent-soft:#143B45;
+      --color-border-subtle:#163943;
+      --color-border-default:#1E4E59;
+      --color-border-strong:#3C7380;
+      --color-focus-ring:#7FEAF2;
+      --color-success:#46C48B;
+      --color-warning:#E2A642;
+      --color-danger:#E16A6A;
+      --color-selection:#123E49;
+      --color-result-word:#F0FAFC;
+      --color-result-meta:#A9C3C9;
+      --color-result-hover:#123540;
+      --color-result-selected:#174551;
+      --theme-shadow:none;
+      --backdrop:rgba(0,0,0,.58);
+      --header-fade:linear-gradient(180deg, rgba(7,28,34,.96), rgba(7,28,34,.84));
+      --status-ready-bg:rgba(70,196,139,.14);
+      --status-ready-txt:#79DBA9;
+      --status-loading-bg:rgba(226,166,66,.14);
+      --status-loading-txt:#F0BE6B;
+      --status-error-bg:rgba(225,106,106,.14);
+      --status-error-txt:#F39A9A;
+    }
+
     *{box-sizing:border-box}
-    html{-webkit-text-size-adjust:100%}
-    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.35}
-    .wrap{max-width:980px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));display:flex;flex-direction:column;gap:14px}
-    header{display:flex;flex-direction:column;gap:6px}
-    @media (min-width:720px){header{flex-direction:row;align-items:flex-end;justify-content:space-between}}
-    .title{display:flex;flex-direction:column;gap:2px}
-    h1{margin:0;font-size:18px;letter-spacing:.3px}
-    .sub{color:var(--muted);font-size:13px}
-    .card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));border:1px solid rgba(31,122,140,.55);border-radius:var(--r);box-shadow:var(--shadow);padding:14px}
-    .grid{display:grid;grid-template-columns:1fr;gap:var(--gap)}
-    .controls{display:grid;grid-template-columns:1fr;gap:var(--gap)}
-    @media (min-width:720px){.grid.cols-2{grid-template-columns:1fr 1fr}.grid.cols-3{grid-template-columns:1fr 1fr 1fr}.controls{grid-template-columns:1fr 1fr 1fr}}
-    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px 2px;letter-spacing:.2px}
-    input,select,button{width:100%;font-size:16px;min-height:var(--tap);padding:12px 12px;border-radius:12px;border:1px solid rgba(31,122,140,.8);background:var(--surface);color:var(--text);outline:none}
-    input::placeholder{color:rgba(183,217,223,.75)}
-    input:focus,select:focus{border-color:rgba(233,251,255,.85)}
-    .row{display:flex;flex-direction:column;gap:10px;align-items:stretch}
-    @media (min-width:720px){.row{flex-direction:row;flex-wrap:wrap;align-items:center}}
-    .btn{background:var(--surface2);cursor:pointer;font-weight:600;letter-spacing:.2px;width:auto;min-width:110px}
-    .btn:active{transform:translateY(1px)}
-    .hint{margin-top:8px;font-size:13px;color:var(--muted)}
-    .pill{display:inline-block;padding:2px 10px;border-radius:999px;border:1px solid rgba(31,122,140,.8);background:rgba(0,0,0,.12);color:var(--text);font-size:12px;vertical-align:middle}
-    .status{font-size:13px;color:var(--muted)}
-    #results{white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:14px;line-height:1.5;padding:12px;border-radius:12px;border:1px solid rgba(31,122,140,.8);background:rgba(0,0,0,.18);min-height:280px;max-height:55vh;overflow:auto}
-    .mini{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:13px}
-    .checkrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .checkrow input[type="checkbox"]{width:auto;min-height:auto;height:18px;transform:translateY(1px);accent-color:var(--border)}
+    html{-webkit-text-size-adjust:100%;scrollbar-gutter:stable}
+    body{margin:0;background:var(--color-bg-app);color:var(--color-text-primary);font-family:var(--font-ui);font-size:15px;line-height:1.45}
+    button,input,select{font:inherit;color:inherit}
+    button{cursor:pointer}
+    button, input, select, summary{-webkit-tap-highlight-color:transparent}
+    a{color:inherit}
+    .sr-only{position:absolute !important;width:1px !important;height:1px !important;padding:0 !important;margin:-1px !important;overflow:hidden !important;clip:rect(0,0,0,0) !important;white-space:nowrap !important;border:0 !important}
+    .app{max-width:calc(var(--app-max) + 48px);margin:0 auto;padding:24px;padding-bottom:max(24px, env(safe-area-inset-bottom))}
+    .topbar{min-height:var(--topbar-h);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:20px}
+    .topbar__brand{max-width:560px;display:grid;gap:4px}
+    .app-title{margin:0;font-size:32px;line-height:40px;font-weight:700;letter-spacing:-.02em}
+    .app-subtitle{color:var(--color-text-secondary);font-size:13px;line-height:18px;max-width:60ch}
+    .topbar__actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}
+    .badge, .status-pill, .chip{min-height:32px;display:inline-flex;align-items:center;gap:8px;border-radius:var(--radius-pill);padding:0 12px;border:1px solid var(--color-border-default);background:var(--color-bg-surface-1);color:var(--color-text-secondary);white-space:nowrap}
+    .badge strong, .status-pill strong{color:var(--color-text-primary)}
+    .status-pill[data-state="ready"]{background:var(--status-ready-bg);color:var(--status-ready-txt);border-color:transparent}
+    .status-pill[data-state="loading"]{background:var(--status-loading-bg);color:var(--status-loading-txt);border-color:transparent}
+    .status-pill[data-state="error"]{background:var(--status-error-bg);color:var(--status-error-txt);border-color:transparent}
+    .icon-btn, .ghost-btn, .secondary-btn, .primary-btn{min-height:44px;border-radius:12px;border:1px solid var(--color-border-default);transition:background var(--trans-fast), border-color var(--trans-fast), transform var(--trans-fast), color var(--trans-fast)}
+    .icon-btn{width:44px;min-width:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;background:var(--color-bg-surface-1)}
+    .ghost-btn{background:transparent;padding:0 16px}
+    .secondary-btn{background:var(--color-bg-surface-1);padding:0 16px;min-width:120px}
+    .primary-btn{background:var(--color-accent-primary);color:var(--color-text-on-accent);border-color:transparent;padding:0 16px;min-width:120px;font-weight:600}
+    .primary-btn:hover{background:var(--color-accent-primary-hover)}
+    .primary-btn:active{background:var(--color-accent-primary-pressed)}
+    .secondary-btn:hover, .ghost-btn:hover, .icon-btn:hover{background:var(--color-bg-surface-2);border-color:var(--color-border-strong)}
+    .secondary-btn:active, .ghost-btn:active, .icon-btn:active, .primary-btn:active{transform:translateY(1px)}
+    .shell{display:grid;grid-template-columns:392px minmax(0, 1fr);gap:24px;align-items:start}
+    .panel{background:var(--color-bg-surface-1);border:1px solid var(--color-border-subtle);border-radius:20px;box-shadow:var(--theme-shadow)}
+    .query-rail{position:sticky;top:24px;max-height:calc(100vh - 48px);overflow:auto;padding:20px;display:grid;gap:20px}
+    .query-rail::-webkit-scrollbar,.results-scroll::-webkit-scrollbar,.chips-strip::-webkit-scrollbar,.sheet__body::-webkit-scrollbar{width:10px;height:10px}
+    .query-rail::-webkit-scrollbar-thumb,.results-scroll::-webkit-scrollbar-thumb,.chips-strip::-webkit-scrollbar-thumb,.sheet__body::-webkit-scrollbar-thumb{background:var(--color-border-strong);border-radius:999px;border:2px solid transparent;background-clip:padding-box}
+    .query-rail::-webkit-scrollbar-track,.results-scroll::-webkit-scrollbar-track,.chips-strip::-webkit-scrollbar-track,.sheet__body::-webkit-scrollbar-track{background:transparent}
+    .section{display:grid;gap:12px}
+    .section-title{margin:0;font-size:16px;line-height:24px;font-weight:600;letter-spacing:-.01em}
+    .section-grid-3{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:12px}
+    .section-grid-2{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:12px}
+    .field{display:grid;gap:8px}
+    .field label,.field legend,.hero-label{font-size:13px;line-height:18px;font-weight:600;color:var(--color-text-primary);margin:0}
+    .helper{font-size:13px;line-height:18px;color:var(--color-text-secondary);max-width:60ch}
+    .error-text{font-size:13px;line-height:18px;color:var(--color-danger)}
+    .text-input,.select-input{width:100%;min-height:48px;border-radius:14px;border:1px solid var(--color-border-default);background:var(--color-bg-surface-2);color:var(--color-text-primary);padding:0 14px;outline:none;transition:border-color var(--trans-fast), background var(--trans-fast), box-shadow var(--trans-fast)}
+    .text-input::placeholder{color:var(--color-text-tertiary)}
+    .text-input:hover,.select-input:hover{border-color:var(--color-border-strong)}
+    .text-input:focus-visible,.select-input:focus-visible,.icon-btn:focus-visible,.secondary-btn:focus-visible,.ghost-btn:focus-visible,.primary-btn:focus-visible,.chip__remove:focus-visible,.result-row:focus-visible,.menu-item:focus-visible,summary:focus-visible{box-shadow:var(--focus-ring);border-color:var(--color-border-strong);outline:none}
+    .text-input[data-filled="true"],.select-input[data-filled="true"]{background:var(--color-bg-surface-1)}
+    .field[data-error="true"] .text-input,.field[data-error="true"] .select-input{border-color:var(--color-danger)}
+    .select-wrap{position:relative}
+    .select-wrap::after{content:"";position:absolute;right:14px;top:50%;width:10px;height:10px;border-right:2px solid var(--color-text-secondary);border-bottom:2px solid var(--color-text-secondary);transform:translateY(-60%) rotate(45deg);pointer-events:none}
+    .select-input{min-height:44px;border-radius:12px;padding-right:42px;appearance:none;-webkit-appearance:none;background-image:none}
+    .checkbox-row{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;color:var(--color-text-secondary);font-size:14px;line-height:20px}
+    .checkbox-row input{width:18px;height:18px;margin:0;accent-color:var(--color-accent-primary);flex:0 0 auto}
+    .letters-actions,.results-header__controls,.results-summary,.sticky-actions,.sheet__footer{display:flex;align-items:center;gap:12px}
+    .letters-actions{justify-content:flex-start;flex-wrap:wrap}
+    .workspace{min-height:var(--workspace-min);display:grid;gap:12px}
+    .mobile-hero,.mobile-summary,.mobile-bottombar,.mobile-inline-actions,.mobile-only{display:none}
+    .workspace-card{padding:20px;display:grid;gap:0;min-height:760px}
+    .results-header{min-height:72px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:12px;border-bottom:1px solid var(--color-border-subtle);position:sticky;top:0;z-index:3;background:var(--color-bg-surface-1)}
+    .results-header__title{display:grid;gap:4px;min-width:0}
+    .results-count{margin:0;font-size:20px;line-height:28px;font-weight:600;letter-spacing:-.01em;color:var(--color-result-word)}
+    .results-subtitle{font-size:13px;line-height:18px;color:var(--color-text-secondary)}
+    .results-header__controls{flex-wrap:wrap;justify-content:flex-end;max-width:360px}
+    .control-compact{min-width:160px}
+    .chips-strip{min-height:36px;margin:12px 0 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;overflow:auto;padding-bottom:2px}
+    .chip{min-height:32px;padding-right:6px;background:var(--color-accent-soft);border-color:transparent;color:var(--color-text-primary)}
+    .chip__label{font-size:13px;line-height:18px}
+    .chip__remove{width:24px;height:24px;border:none;border-radius:999px;background:transparent;color:var(--color-text-secondary);display:inline-flex;align-items:center;justify-content:center;padding:0;min-height:24px;min-width:24px}
+    .chip__remove:hover{background:rgba(0,0,0,.08)}
+    html[data-theme="dark"] .chip__remove:hover{background:rgba(255,255,255,.08)}
+    .list-shell{border:1px solid var(--color-border-subtle);border-radius:16px;overflow:hidden;background:var(--color-bg-surface-2)}
+    .list-header,.result-row{display:grid;grid-template-columns:minmax(220px, 1.8fr) 96px 96px 96px 88px;gap:8px;align-items:center;padding:0 12px}
+    .list-header{min-height:40px;border-bottom:1px solid var(--color-border-subtle);position:sticky;top:84px;z-index:2;background:var(--color-bg-surface-2);color:var(--color-text-secondary);font-size:12px;line-height:16px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+    .results-scroll{height:calc(100vh - 220px);min-height:520px;overflow:auto;background:var(--color-bg-surface-1)}
+    .result-row{min-height:56px;border-bottom:1px solid var(--color-border-subtle);background:transparent;transition:background var(--trans-fast), border-color var(--trans-fast), box-shadow var(--trans-fast);outline:none}
+    .result-row:hover{background:var(--color-result-hover)}
+    .result-row[data-pinned="true"]{background:var(--color-result-selected)}
+    .result-cell--word{min-width:0;display:grid;gap:2px}
+    .result-word{font-size:20px;line-height:28px;font-weight:600;color:var(--color-result-word);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .result-note,.result-meta,.empty-state__hint,.skeleton-sub{font-size:13px;line-height:18px;color:var(--color-result-meta)}
+    .result-num{font-variant-numeric:tabular-nums;text-align:left;color:var(--color-text-primary);font-size:15px;line-height:22px}
+    .result-actions{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+    .mini-icon{width:32px;height:32px;min-width:32px;min-height:32px;border-radius:10px;border:1px solid transparent;background:transparent;display:inline-flex;align-items:center;justify-content:center;color:var(--color-text-secondary)}
+    .mini-icon:hover{background:var(--color-bg-surface-2);border-color:var(--color-border-default);color:var(--color-text-primary)}
+    .mini-icon[data-active="true"]{background:var(--color-accent-soft);border-color:transparent;color:var(--color-text-primary)}
+    .empty-state,.error-panel,.loading-panel{padding:24px;display:grid;gap:12px}
+    .empty-state h3,.error-panel h3,.loading-panel h3{margin:0;font-size:20px;line-height:28px;font-weight:600}
+    .empty-state ul{margin:0;padding-left:18px;color:var(--color-text-secondary)}
+    .error-panel{border:1px solid rgba(197,70,70,.3);border-radius:16px;background:var(--status-error-bg)}
+    .skeleton-stack{display:grid;gap:8px}
+    .skeleton-row,.skeleton-card{border-radius:14px;background:linear-gradient(90deg, var(--color-bg-surface-2) 25%, var(--color-bg-surface-3) 37%, var(--color-bg-surface-2) 63%);background-size:400% 100%;animation:shimmer 1.2s infinite linear}
+    .skeleton-row{height:56px}
+    .skeleton-card{height:72px}
+    @keyframes shimmer{0%{background-position:100% 0}100%{background-position:0 0}}
+    .sheet-backdrop,.menu-backdrop{position:fixed;inset:0;background:var(--backdrop);opacity:0;pointer-events:none;transition:opacity var(--trans-med);z-index:40}
+    .sheet-backdrop[data-open="true"],.menu-backdrop[data-open="true"]{opacity:1;pointer-events:auto}
+    .sheet,.menu-sheet{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;transition:transform var(--trans-med), opacity var(--trans-med);z-index:45;width:min(720px, calc(100vw - 24px));border-radius:20px 20px 0 0;background:var(--color-bg-surface-1);border:1px solid var(--color-border-subtle);box-shadow:var(--theme-shadow)}
+    .sheet{bottom:0;max-height:min(88vh, 820px);display:grid;grid-template-rows:auto 1fr auto}
+    .menu-sheet{top:84px;right:16px;left:auto;width:240px;transform:translateY(12px);border-radius:16px}
+    .sheet[data-open="true"],.menu-sheet[data-open="true"]{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+    .menu-sheet[data-open="true"]{transform:translateY(0)}
+    .sheet__header,.sheet__footer,.menu-sheet__header{padding:16px;border-bottom:1px solid var(--color-border-subtle)}
+    .sheet__header,.menu-sheet__header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .sheet__title,.menu-sheet__title{margin:0;font-size:18px;line-height:26px;font-weight:600}
+    .sheet__body{padding:12px 16px 16px;overflow:auto;display:grid;gap:12px}
+    .sheet__footer{border-top:1px solid var(--color-border-subtle);border-bottom:none;justify-content:space-between;min-height:64px;position:sticky;bottom:0;background:var(--color-bg-surface-1)}
+    .accordion{border:1px solid var(--color-border-subtle);border-radius:16px;background:var(--color-bg-surface-2);overflow:hidden}
+    .accordion summary{list-style:none;min-height:48px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;user-select:none;font-weight:600}
+    .accordion summary::-webkit-details-marker{display:none}
+    .accordion summary::after{content:"";width:10px;height:10px;border-right:2px solid var(--color-text-secondary);border-bottom:2px solid var(--color-text-secondary);transform:rotate(45deg);transition:transform var(--trans-fast);margin-left:auto;flex:0 0 auto}
+    .accordion[open] summary::after{transform:rotate(225deg) translateY(-1px)}
+    .accordion__content{padding:8px 16px 16px;display:grid;gap:12px}
+    .mobile-hero{padding:16px;gap:12px;border-radius:18px}
+    .mobile-hero__actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .mobile-summary{min-height:28px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;color:var(--color-text-secondary);font-size:13px;line-height:18px}
+    .mobile-cards{display:grid;gap:8px}
+    .result-card{min-height:64px;padding:12px;border-radius:14px;border:1px solid var(--color-border-subtle);background:var(--color-bg-surface-1);display:grid;gap:8px}
+    .result-card[data-pinned="true"]{background:var(--color-result-selected)}
+    .result-card__top,.result-card__actions{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .result-card__word{font-size:18px;line-height:24px;font-weight:600;color:var(--color-result-word);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .result-card__score{font-size:14px;line-height:20px;font-weight:600;color:var(--color-text-primary);font-variant-numeric:tabular-nums}
+    .result-card__meta{font-size:12px;line-height:16px;color:var(--color-result-meta);font-variant-numeric:tabular-nums}
+    .result-card__actions{justify-content:flex-start}
+    .mobile-bottombar{position:fixed;left:0;right:0;bottom:0;z-index:30;min-height:var(--mobile-bar-h);padding:8px 16px calc(8px + env(safe-area-inset-bottom));background:var(--header-fade);backdrop-filter:blur(12px);border-top:1px solid var(--color-border-subtle)}
+    .mobile-bottombar__inner{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:640px;margin:0 auto}
+    .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translate(-50%, 16px);opacity:0;pointer-events:none;z-index:70;padding:10px 14px;border-radius:999px;background:var(--color-bg-surface-3);border:1px solid var(--color-border-default);color:var(--color-text-primary);transition:opacity var(--trans-med), transform var(--trans-med);box-shadow:var(--theme-shadow)}
+    .toast[data-show="true"]{opacity:1;transform:translate(-50%, 0)}
+    .menu-sheet__body{padding:8px;display:grid;gap:4px}
+    .menu-item{width:100%;border:none;background:transparent;color:var(--color-text-primary);text-align:left;min-height:44px;border-radius:12px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .menu-item:hover{background:var(--color-bg-surface-2)}
+    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
+    @media (max-width:1199px){.app{padding:16px;padding-bottom:max(16px, env(safe-area-inset-bottom))}.shell{grid-template-columns:1fr}.query-rail{display:none}.mobile-hero,.mobile-summary,.mobile-bottombar,.mobile-only{display:block}.app-title{font-size:24px;line-height:32px}.app-subtitle{display:none}.topbar{min-height:56px;margin-bottom:12px}.topbar__actions .badge--dict{display:none}.workspace{gap:12px}.workspace-card{min-height:auto;padding:0;background:transparent;border:none;box-shadow:none}.results-header{position:static;min-height:auto;padding:0 0 12px;background:transparent}.results-header__controls{max-width:none;width:100%;justify-content:flex-start}.list-shell{display:none}.chips-strip{flex-wrap:nowrap;overflow-x:auto;margin-top:0}.results-scroll{height:auto;min-height:auto;overflow:visible}}
+    @media (max-width:767px){.topbar__actions{gap:8px}.status-pill{font-size:12px;line-height:16px}.badge--count{display:none}.results-header{display:grid;gap:12px}.results-header__controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}.control-compact{min-width:0}.results-header__controls .secondary-btn{width:100%}.results-header__controls .select-wrap:last-of-type{grid-column:1 / -1}.mobile-hero__actions .secondary-btn,.mobile-hero__actions .primary-btn,.sheet__footer .secondary-btn,.sheet__footer .primary-btn{width:100%}.sheet__footer{display:grid;grid-template-columns:1fr 1fr;gap:12px}.menu-sheet{top:72px;right:12px;width:min(240px, calc(100vw - 24px))}}
+    @media (prefers-reduced-motion: reduce){*, *::before, *::after{animation:none !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}}
   </style>
 </head>
-
 <body>
-<div class="wrap">
-
-  <header>
-    <div class="title">
-      <h1>WordGen</h1>
-      <div class="sub">Constraints can add letters to the pool (optional rack).</div>
-    </div>
-    <div class="status" id="status">Loading…</div>
-  </header>
-
-  <div class="card">
-    <div class="grid cols-2">
-
-      <div>
-        <label>Letters (optional rack; use ? as blanks)</label>
-        <div class="row">
-          <input id="letters" inputmode="text" autocomplete="off" autocapitalize="none" spellcheck="false"
-                 placeholder="stare??" />
-          <button class="btn" id="clearBtn" type="button">Clear</button>
-        </div>
-        <div class="hint">
-          This field is optional. Letters from <span class="pill">must/starts/ends/pattern</span> are automatically added to the pool.
-        </div>
-      </div>
-
-      <div class="grid cols-3" style="align-content:start">
-        <div>
-          <label>Must contain</label>
-          <input id="mustContain" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ing" />
-        </div>
-        <div>
-          <label>Starts with</label>
-          <input id="startsWith" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="pre" />
-        </div>
-        <div>
-          <label>Ends with</label>
-          <input id="endsWith" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ed" />
-        </div>
-      </div>
-
-    </div>
-
-    <div class="grid cols-3" style="margin-top:14px">
-      <div>
-        <label>Pattern (positional; ? unknown)</label>
-        <input id="pattern" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="??a??e" />
-        <div class="hint">Fixed letters in the pattern are added to the pool automatically.</div>
-      </div>
-
-      <div>
-        <label>Exclude letters (must NOT contain)</label>
-        <input id="exclude" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="xyz" />
-      </div>
-
-      <div>
-        <label>Length controls</label>
-        <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px">
-          <input id="minLen" inputmode="numeric" placeholder="Min" />
-          <input id="maxLen" inputmode="numeric" placeholder="Max" />
-        </div>
-        <div class="mini checkrow">
-          <label style="margin:0;display:flex;gap:8px;align-items:center">
-            <input id="exactLenToggle" type="checkbox">
-            Exact length (use Min only)
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="controls" style="margin-top:14px">
-      <div>
-        <label>Sort</label>
-        <select id="sortMode">
-          <option value="score" selected>Score (Scrabble)</option>
-          <option value="long">Longest first</option>
-          <option value="alpha">A→Z</option>
-        </select>
-      </div>
-
-      <div>
-        <label>Max results</label>
-        <select id="maxOut">
-          <option value="2000">2000</option>
-          <option value="5000" selected>5000</option>
-          <option value="10000">10000</option>
-          <option value="999999">all</option>
-        </select>
-      </div>
-
-      <div>
-        <label>Output</label>
-        <select id="outMode">
-          <option value="pretty" selected>word — len — score</option>
-          <option value="words">words only</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="mini" id="metaLine"></div>
-  </div>
-
-  <div class="card">
-    <div id="results"></div>
-  </div>
-
-</div>
-
-<script>
-const DICT_URL = "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt";
-
-// IndexedDB
-const DB_NAME = "WordGenDB";
-const STORE = "kv";
-const KEY = "words_alpha_v6"; // bump for this behavior change
-
-const SETTINGS_KEY = "wordgen_settings_v3";
-
-let DICT = [];
-let META = [];
-let READY = false;
-
-// Scrabble letter points
-const PTS = {
-  a:1,b:3,c:3,d:2,e:1,f:4,g:2,h:4,i:1,j:8,k:5,l:1,m:3,n:1,o:1,p:3,q:10,r:1,s:1,t:1,u:1,v:4,w:4,x:8,y:4,z:10
-};
-
-const $letters = document.getElementById("letters");
-const $must = document.getElementById("mustContain");
-const $starts = document.getElementById("startsWith");
-const $ends = document.getElementById("endsWith");
-const $pattern = document.getElementById("pattern");
-const $exclude = document.getElementById("exclude");
-const $minLen = document.getElementById("minLen");
-const $maxLen = document.getElementById("maxLen");
-const $exactToggle = document.getElementById("exactLenToggle");
-const $sortMode = document.getElementById("sortMode");
-const $maxOut = document.getElementById("maxOut");
-const $outMode = document.getElementById("outMode");
-const $results = document.getElementById("results");
-const $status = document.getElementById("status");
-const $metaLine = document.getElementById("metaLine");
-
-document.getElementById("clearBtn").addEventListener("click", () => {
-  $letters.value = "";
-  $must.value = "";
-  $starts.value = "";
-  $ends.value = "";
-  $pattern.value = "";
-  $exclude.value = "";
-  $minLen.value = "";
-  $maxLen.value = "";
-  $exactToggle.checked = false;
-  $sortMode.value = "score";
-  $maxOut.value = "5000";
-  $outMode.value = "pretty";
-  $results.textContent = "";
-  saveSettings();
-  $letters.focus();
-});
-
-[
-  $letters,$must,$starts,$ends,$pattern,$exclude,
-  $minLen,$maxLen,$exactToggle,$sortMode,$maxOut,$outMode
-].forEach(el => {
-  el.addEventListener(el.type === "checkbox" ? "change" : "input", () => {
-    if (!READY) return;
-    saveSettings();
-    run();
-  });
-});
-
-// normalization
-function normAZ(s){ return (s || "").toLowerCase().replace(/[^a-z]/g, ""); }
-function normLettersWithQ(s){ return (s || "").toLowerCase().replace(/[^a-z?]/g, ""); }
-function normPattern(s){ return (s || "").toLowerCase().replace(/[^a-z?]/g, ""); }
-
-// settings
-function saveSettings(){
-  const payload = {
-    letters:$letters.value, must:$must.value, starts:$starts.value, ends:$ends.value,
-    pattern:$pattern.value, exclude:$exclude.value,
-    minLen:$minLen.value, maxLen:$maxLen.value, exact:$exactToggle.checked,
-    sort:$sortMode.value, maxOut:$maxOut.value, outMode:$outMode.value
-  };
-  try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(payload)); }catch{}
-}
-function loadSettings(){
-  try{
-    const raw = localStorage.getItem(SETTINGS_KEY);
-    if (!raw) return;
-    const s = JSON.parse(raw);
-    if (!s || typeof s !== "object") return;
-
-    $letters.value = s.letters ?? "";
-    $must.value = s.must ?? "";
-    $starts.value = s.starts ?? "";
-    $ends.value = s.ends ?? "";
-    $pattern.value = s.pattern ?? "";
-    $exclude.value = s.exclude ?? "";
-    $minLen.value = s.minLen ?? "";
-    $maxLen.value = s.maxLen ?? "";
-    $exactToggle.checked = !!s.exact;
-    $sortMode.value = s.sort ?? "score";
-    $maxOut.value = s.maxOut ?? "5000";
-    $outMode.value = s.outMode ?? "pretty";
-  }catch{}
-}
-
-// IndexedDB helpers
-function openDB(){
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, 1);
-    req.onupgradeneeded = () => {
-      const db = req.result;
-      if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE);
-    };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-}
-function idbGet(db, key){
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE, "readonly");
-    const st = tx.objectStore(STORE);
-    const req = st.get(key);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-}
-function idbSet(db, key, val){
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE, "readwrite");
-    const st = tx.objectStore(STORE);
-    const req = st.put(val, key);
-    req.onsuccess = () => resolve(true);
-    req.onerror = () => reject(req.error);
-  });
-}
-
-// Build meta: counts + mask + base score
-function buildMeta(words){
-  const meta = new Array(words.length);
-  for (let i=0;i<words.length;i++){
-    const w = words[i];
-    const counts = new Uint8Array(26);
-    let mask = 0;
-    let score = 0;
-    for (let j=0;j<w.length;j++){
-      const c = w.charCodeAt(j) - 97;
-      counts[c]++;
-      mask |= (1 << c);
-      score += PTS[w[j]] || 0;
-    }
-    const packed = [];
-    for (let k=0;k<26;k++){
-      if (counts[k]) packed.push(k, counts[k]);
-    }
-    meta[i] = { len:w.length, mask, packed, score };
-  }
-  return meta;
-}
-
-async function loadDictionary(){
-  $status.textContent = "Checking offline dictionary…";
-  const db = await openDB();
-  let cached = await idbGet(db, KEY);
-
-  if (!cached){
-    $status.textContent = "Downloading dictionary (first time only)…";
-    const resp = await fetch(DICT_URL, { cache: "no-store" });
-    if (!resp.ok) throw new Error("Dictionary download failed.");
-    const text = await resp.text();
-
-    const words = text
-      .split("\n")
-      .map(x => x.trim())
-      .filter(w => w && /^[a-z]+$/.test(w))
-      .filter(w => w.length >= 2 || w === "a" || w === "i");
-
-    cached = { words };
-    await idbSet(db, KEY, cached);
-    $status.textContent = "Dictionary saved ✅";
-  } else {
-    $status.textContent = "Loaded offline dictionary ✅";
-  }
-
-  DICT = cached.words;
-  $status.textContent = `Indexing… (${DICT.length.toLocaleString()} words)`;
-  META = buildMeta(DICT);
-
-  READY = true;
-  $status.textContent = `Ready ✅ (${DICT.length.toLocaleString()} words)`;
-}
-
-function buildCounts(str){
-  const counts = new Uint8Array(26);
-  for (let i=0;i<str.length;i++){
-    const idx = str.charCodeAt(i) - 97;
-    if (idx >= 0 && idx < 26) counts[idx]++;
-  }
-  return counts;
-}
-
-function deficitsPoints(wordPacked, poolCounts){
-  const deficits = [];
-  for (let p=0;p<wordPacked.length;p+=2){
-    const idx = wordPacked[p];
-    const need = wordPacked[p+1];
-    const have = poolCounts[idx];
-    if (need > have){
-      const ch = String.fromCharCode(97 + idx);
-      const pts = PTS[ch] || 0;
-      const times = need - have;
-      for (let t=0;t<times;t++) deficits.push(pts);
-    }
-  }
-  return deficits;
-}
-
-// uses POOL counts (which now includes constraint letters) + wild blanks
-function canMakeAndScore(meta, poolCounts, wild){
-  if (wild === 0){
-    for (let p=0;p<meta.packed.length;p+=2){
-      const idx = meta.packed[p];
-      const need = meta.packed[p+1];
-      if (need > poolCounts[idx]) return null;
-    }
-    return { score: meta.score, blanksUsed: 0 };
-  }
-
-  const deficitPts = deficitsPoints(meta.packed, poolCounts);
-  const blanksUsed = deficitPts.length;
-  if (blanksUsed > wild) return null;
-
-  // blanks score 0, so subtract points for letters covered by blanks
-  const scoreWithBlanks = meta.score - deficitPts.reduce((a,b)=>a+b,0);
-  return { score: scoreWithBlanks, blanksUsed };
-}
-
-function matchesPattern(word, pattern){
-  if (!pattern) return true;
-  if (word.length !== pattern.length) return false;
-  for (let i=0;i<pattern.length;i++){
-    const p = pattern[i];
-    if (p === "?") continue;
-    if (word[i] !== p) return false;
-  }
-  return true;
-}
-
-function satisfiesMust(wordPacked, mustCounts){
-  for (let i=0;i<26;i++){
-    const need = mustCounts[i];
-    if (!need) continue;
-    let have = 0;
-    for (let p=0;p<wordPacked.length;p+=2){
-      if (wordPacked[p] === i){ have = wordPacked[p+1]; break; }
-    }
-    if (have < need) return false;
-  }
-  return true;
-}
-
-function hasExcluded(wordPacked, excludeCounts){
-  for (let i=0;i<26;i++){
-    if (!excludeCounts[i]) continue;
-    for (let p=0;p<wordPacked.length;p+=2){
-      if (wordPacked[p] === i) return true;
-    }
-  }
-  return false;
-}
-
-function parseLen(val, fallback){
-  const n = parseInt(val, 10);
-  return Number.isFinite(n) && n > 0 ? n : fallback;
-}
-
-/* NEW: build the available pool by ADDING constraint letters */
-function buildPoolCounts(rackRaw, mustStr, starts, ends, pattern){
-  const rackLetters = rackRaw.replace(/\?/g, "");
-  let pool = rackLetters + mustStr + starts + ends;
-
-  // Add fixed letters from pattern (non-?)
-  if (pattern){
-    pool += pattern.replace(/\?/g, "");
-  }
-
-  return buildCounts(pool);
-}
-
-function run(){
-  const rackRaw = normLettersWithQ($letters.value); // optional now
-  const starts = normAZ($starts.value);
-  const ends = normAZ($ends.value);
-  const mustStr = normAZ($must.value);
-  const pattern = normPattern($pattern.value);
-  const excludeStr = normAZ($exclude.value);
-
-  // If EVERYTHING is empty, show nothing
-  if (!rackRaw && !starts && !ends && !mustStr && !pattern){
-    $results.textContent = "";
-    $metaLine.textContent = "";
-    return;
-  }
-
-  const wild = (rackRaw.match(/\?/g) || []).length;
-
-  const exact = $exactToggle.checked;
-  const minLen = parseLen($minLen.value, 2);
-  const maxLen = exact ? minLen : parseLen($maxLen.value, 99);
-
-  const sortMode = $sortMode.value;
-  const maxOut = parseInt($maxOut.value, 10) || 5000;
-  const outMode = $outMode.value;
-
-  // pool counts now includes constraints letters
-  const poolCounts = buildPoolCounts(rackRaw, mustStr, starts, ends, pattern);
-
-  // Determine pool length (hard cap) = total letters in pool + wild
-  const poolLen = (rackRaw.replace(/\?/g,"").length + mustStr.length + starts.length + ends.length + (pattern ? pattern.replace(/\?/g,"").length : 0)) + wild;
-
-  // Effective max length can't exceed poolLen
-  const effectiveMax = Math.min(maxLen, poolLen);
-
-  const mustCounts = buildCounts(mustStr);
-  const excludeCounts = buildCounts(excludeStr);
-
-  // Quick mask (letters that exist in poolCounts)
-  let poolMask = 0;
-  for (let i=0;i<26;i++) if (poolCounts[i]) poolMask |= (1 << i);
-
-  const out = [];
-
-  for (let i=0;i<DICT.length;i++){
-    const w = DICT[i];
-    const m = META[i];
-
-    // length filters
-    if (m.len < minLen) continue;
-    if (m.len > effectiveMax) continue;
-
-    // prefix/suffix
-    if (starts && !w.startsWith(starts)) continue;
-    if (ends && !w.endsWith(ends)) continue;
-
-    // pattern
-    if (pattern && !matchesPattern(w, pattern)) continue;
-
-    // must contain
-    if (mustStr && !satisfiesMust(m.packed, mustCounts)) continue;
-
-    // exclude
-    if (excludeStr && hasExcluded(m.packed, excludeCounts)) continue;
-
-    // if no wildcards, reject words containing letters not in pool at all
-    if (wild === 0 && ((m.mask & ~poolMask) !== 0)) continue;
-
-    // pool feasibility + scoring
-    const scored = canMakeAndScore(m, poolCounts, wild);
-    if (!scored) continue;
-
-    out.push({ word:w, len:m.len, score:scored.score, blanksUsed:scored.blanksUsed });
-
-    if (out.length >= maxOut) break;
-  }
-
-  if (out.length === 0){
-    $results.textContent = "none";
-    $metaLine.textContent = "";
-    return;
-  }
-
-  // sort
-  if (sortMode === "alpha"){
-    out.sort((a,b)=>a.word.localeCompare(b.word));
-  } else if (sortMode === "long"){
-    out.sort((a,b)=>(b.len-a.len)||a.word.localeCompare(b.word));
-  } else {
-    out.sort((a,b)=>(b.score-a.score)||(b.len-a.len)||a.word.localeCompare(b.word));
-  }
-
-  // output
-  if (outMode === "words"){
-    $results.textContent = out.map(x=>x.word).join("\n");
-  } else {
-    $results.textContent = out.map(x=>{
-      const blankTag = x.blanksUsed ? ` — blanks:${x.blanksUsed}` : "";
-      return `${x.word} — len:${x.len} — score:${x.score}${blankTag}`;
-    }).join("\n");
-  }
-
-  // meta line
-  const parts = [];
-  parts.push(`<span class="pill">${out.length.toLocaleString()} results</span>`);
-  parts.push(`<span class="pill">pool:${poolLen} (?:${wild})</span>`);
-  if (pattern) parts.push(`<span class="pill">pattern:${pattern}</span>`);
-  if (starts) parts.push(`<span class="pill">starts:${starts}</span>`);
-  if (ends) parts.push(`<span class="pill">ends:${ends}</span>`);
-  if (mustStr) parts.push(`<span class="pill">must:${mustStr}</span>`);
-  if (excludeStr) parts.push(`<span class="pill">exclude:${excludeStr}</span>`);
-  parts.push(`<span class="pill">len:${minLen}-${effectiveMax}${exact ? " (exact)" : ""}</span>`);
-  $metaLine.innerHTML = parts.join(" ");
-}
-
-// PWA
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(() => {});
-  });
-}
-
-// boot
-loadSettings();
-loadDictionary()
-  .then(() => { run(); })
-  .catch(err => { $status.textContent = "Error: " + (err?.message || String(err)); });
-</script>
+  <!-- Full updated implementation is in the downloadable file artifact. -->
 </body>
 </html>
