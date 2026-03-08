@@ -1,9 +1,10 @@
 {
-  "name": "Word Generator",
+  "name": "WordGen",
   "short_name": "WordGen",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#111111",
+  "background_color": "#071C22",
+  "theme_color": "#071C22",
+  "description": "Word finder with rack, pattern, and constraint filters.",
   "icons": []
 }
